@@ -55,7 +55,7 @@
   :config
   (ivy-mode 1))
 
-
+(use-package nerd-icons)
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1)
