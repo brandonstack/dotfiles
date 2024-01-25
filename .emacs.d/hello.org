@@ -1,0 +1,30 @@
+#+TITLE: Hello org-mode
+* Test My H1
+** Test My H2
+
+dfadsfad
+asdfasdfasd
+dfasdfadf
+
+** The I
+dent mode
+
+*some*  =some code= ~code 2~  dfd
+Let's make it more beautiful
+/slash/
+[[https://orgmode.org]]
+
+My bullet point list
+- test
+- test 2
+- test 3
+- test 4
+
+** t2
+*** t3
+ddd
+**** t4
+***** t5
+****** t6
+******* t7
+ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd  ddddddddddddddddddddddddddddddddddddddddddd

@@ -11,7 +11,7 @@
 (setq visible-bell t)
 
 ;; set font
-(set-face-attribute 'default nil :font "Fira Code Retina" :height 110)
+(set-face-attribute 'default nil :font "Fira Code Retina" :height 120)
 
 ;;; global config
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -68,7 +68,7 @@
   :init (doom-modeline-mode 1)
   :custom ((doom-modeline-height 15)))
 (use-package doom-themes)
-(load-theme 'doom-one)
+(load-theme 'doom-one t)
 
 (column-number-mode)
 (global-display-line-numbers-mode t)
@@ -92,7 +92,6 @@
   :init
   (ivy-rich-mode 1))
 
-
 (use-package helpful
   :custom
   (counsel-describe-function-function #'helpful-callable)
@@ -102,3 +101,49 @@
   ([remap describe-command] . helpful-command)
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
+
+
+;; org-mode
+(defun org-mode-setup ()
+  (org-indent-mode)
+  ;; (variable-pitch-mode 1)
+  (visual-line-mode 1))
+
+(defun org-font-setup ()
+  ;; Replace list hyphen with dot
+  (font-lock-add-keywords 'org-mode
+                          '(("^ *\\([-]\\) "
+                            (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+  ;; Set faces for heading levels
+  (dolist (face '((org-level-1 . 1.2)
+                  (org-level-2 . 1.1)
+                  (org-level-3 . 1.05)
+                  (org-level-4 . 1.0)
+                  (org-level-5 . 1.1)
+                  (org-level-6 . 1.1)
+                  (org-level-7 . 1.1)
+                  (org-level-8 . 1.1)))
+    (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face))))
+
+(use-package org
+  :hook (org-mode . org-mode-setup)
+  :config
+  (setq org-ellipsis " ▾")
+  (org-font-setup))
+
+(use-package org-bullets
+  :after org
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+(setq org-startup-indented t)
+
+(defun org-mode-visual-fill ()
+  (setq visual-fill-column-width 100
+        visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
+
+(use-package visual-fill-column
+  :hook (org-mode . org-mode-visual-fill))
