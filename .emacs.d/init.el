@@ -161,6 +161,7 @@
   :hook (org-mode . org-mode-visual-fill))
 
 (require 'init-org)
+(require 'init-tools)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -169,7 +170,7 @@
  ;; If there is more than one, they won't work right.
  '(delete-selection-mode nil)
  '(package-selected-packages
-   '(magit org-roam visual-fill-column org-bullets helpful ivy-rich which-key rainbow-delimiters doom-themes doom-modeline nerd-icons counsel swiper)))
+   '(projectile magit org-roam visual-fill-column org-bullets helpful ivy-rich which-key rainbow-delimiters doom-themes doom-modeline nerd-icons counsel swiper)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
