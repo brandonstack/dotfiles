@@ -38,6 +38,7 @@
 (use-package swiper)
 (use-package counsel
   :bind (("M-x" . counsel-M-x)
+	 ("C-<tab>" . counsel-switch-buffer)
 	 ("C-x b" . counsel-ibuffer)
 	 ("C-x C-f" . counsel-find-file)
 	 :map minibuffer-local-map
@@ -162,6 +163,7 @@
 
 (require 'init-org)
 (require 'init-tools)
+(require 'init-keybinding)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
