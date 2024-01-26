@@ -1,0 +1,12 @@
+\.git
+\.site
+\.build.yml
+\.files
+\.archive
+backgrounds
+daviwil
+mail
+fonts
+^/.*\.org
+LICENSE
+.gitignore

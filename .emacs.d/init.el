@@ -10,6 +10,7 @@
 ;; setup visiable bell
 (setq visible-bell t)
 
+(add-to-list 'load-path "~/.emacs.d/modules")
 ;; set font
 (set-face-attribute 'default nil :font "Fira Code Retina" :height 120)
 
@@ -130,6 +131,17 @@
   :hook (org-mode . org-mode-setup)
   :config
   (setq org-ellipsis " ▾")
+  (setq org-directory "~/Workspace/xing.org")
+  (setq org-agenda-files '("~/Workspace/xing.org/tasks"))
+
+  (setq org-agenda-start-with-log-mode t)
+  (setq org-log-done 'time)
+  (setq org-log-into-drawer t)
+
+  (setq org-todo-keywords
+  '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
+    (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+
   (org-font-setup))
 
 (use-package org-bullets
@@ -147,3 +159,20 @@
 
 (use-package visual-fill-column
   :hook (org-mode . org-mode-visual-fill))
+
+(require 'init-org)
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(delete-selection-mode nil)
+ '(package-selected-packages
+   '(magit org-roam visual-fill-column org-bullets helpful ivy-rich which-key rainbow-delimiters doom-themes doom-modeline nerd-icons counsel swiper)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
