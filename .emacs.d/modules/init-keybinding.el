@@ -7,8 +7,9 @@
    "b" 'counsel-bookmark
    "c" 'org-capture))
 
-(use-package evil
-  :config
-  (evil-mode 1))
+;; diabling evil mode
+;; (use-package evil
+;;   :config
+;;   (evil-mode 1))
 
 (provide 'init-keybinding)
