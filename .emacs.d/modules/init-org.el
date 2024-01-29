@@ -29,14 +29,34 @@
   (setq org-ellipsis " ▾")
   (setq org-directory "~/Workspace/xing.org")
   (setq org-agenda-files '("~/Workspace/xing.org/tasks"))
+  (setq org-default-notes-file (concat org-directory "/tasks/refile.org"))
 
   (setq org-agenda-start-with-log-mode t)
   (setq org-log-done 'time)
   (setq org-log-into-drawer t)
 
-  ;; (setq org-todo-keywords
-  ;; '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!)")
-  ;;   (sequence "BACKLOG(b)" "PLAN(p)" "READY(r)" "ACTIVE(a)" "REVIEW(v)" "WAIT(w@/!)" "HOLD(h)" "|" "COMPLETED(c)" "CANC(k@)")))
+  (setq org-todo-keywords
+   '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+     (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")))
+  (setq org-todo-keyword-faces
+      (quote (("TODO" :foreground "red" :weight bold)
+              ("NEXT" :foreground "yellow" :weight bold)
+              ("DONE" :foreground "forest green" :weight bold)
+              ("WAITING" :foreground "orange" :weight bold)
+              ("HOLD" :foreground "magenta" :weight bold)
+              ("CANCELLED" :foreground "forest green" :weight bold))))
+  (setq org-use-fast-todo-selection t)
+  (setq org-agenda-custom-commands
+      '(("w" "Work Agenda"
+         ((agenda "" ((org-agenda-span 1)))
+          (tags-todo "+:WORK:/NEXT"
+                     ((org-agenda-overriding-header "Next Tasks")))
+          (tags-todo "+:WORK:/TODO"
+                     ((org-agenda-overriding-header "To-Do Tasks")))
+          (tags-todo "+:WORK:/HOLD|WAITING"
+                     ((org-agenda-overriding-header "Hold/Waiting Tasks"))))
+         nil
+         nil)))
 
   (org-font-setup))
 
@@ -77,5 +97,7 @@
           org-roam-ui-follow t
           org-roam-ui-update-on-save t
           org-roam-ui-open-on-start t))
+
+(use-package org-cliplink)
 
 (provide 'init-org)
