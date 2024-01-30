@@ -49,9 +49,10 @@
   (setq org-agenda-custom-commands
       '(("w" "Work Agenda"
          ((agenda "" ((org-agenda-span 1)))
-          (tags-todo "+:WORK:/NEXT"
-                     ((org-agenda-overriding-header "Next Tasks")))
-          (tags-todo "+:WORK:/TODO"
+          (tags      "+WORK+TODO=\"NEXT\""
+                     ((org-agenda-overriding-header "Next Tasks")
+		      (org-agenda-sorting-strategy '(todo-state-down priority-down))))
+          (tags-todo "+WORK+TODO=\"TODO\""
                      ((org-agenda-overriding-header "To-Do Tasks")))
           (tags-todo "+:WORK:/HOLD|WAITING"
                      ((org-agenda-overriding-header "Hold/Waiting Tasks"))))
