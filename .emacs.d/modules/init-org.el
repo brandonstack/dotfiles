@@ -34,13 +34,15 @@
   (setq org-agenda-start-with-log-mode t)
   (setq org-log-done 'time)
   (setq org-log-into-drawer t)
+  (setq org-cycle-separator-lines -1)
 
   (setq org-todo-keywords
-   '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+   '((sequence "TODO(t)" "NEXT(n)" "ONGOING(o)" "|" "DONE(d)")
      (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")))
   (setq org-todo-keyword-faces
       (quote (("TODO" :foreground "red" :weight bold)
               ("NEXT" :foreground "yellow" :weight bold)
+	      ("ONGOING" :foreground "orange" :weight bold)
               ("DONE" :foreground "forest green" :weight bold)
               ("WAITING" :foreground "orange" :weight bold)
               ("HOLD" :foreground "magenta" :weight bold)
@@ -49,6 +51,8 @@
   (setq org-agenda-custom-commands
       '(("w" "Work Agenda"
          ((agenda "" ((org-agenda-span 1)))
+	  (tags      "+WORK+TODO=\"ONGOING\""
+		     ((org-agenda-overriding-header "Ongoing Tasks")))
           (tags      "+WORK+TODO=\"NEXT\""
                      ((org-agenda-overriding-header "Next Tasks")
 		      (org-agenda-sorting-strategy '(todo-state-down priority-down))))
@@ -100,5 +104,6 @@
           org-roam-ui-open-on-start t))
 
 (use-package org-cliplink)
+(use-package org-pomodoro)
 
 (provide 'init-org)
