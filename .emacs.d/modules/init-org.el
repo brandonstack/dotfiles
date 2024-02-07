@@ -61,7 +61,17 @@
           (tags-todo "+:WORK:/HOLD|WAITING"
                      ((org-agenda-overriding-header "Hold/Waiting Tasks"))))
          nil
-         nil)))
+         nil)
+	("p" "Personal Agenda"
+	 ((agenda "" ((org-agenda-span 7)))
+	  )
+	 nil
+	 nil)
+	("i" "Inbox"
+	 ((tags      "+INBOX+TODO=\"TODO\""))
+	 nil
+	 nil)
+	))
 
   (org-font-setup))
 
@@ -105,5 +115,24 @@
 
 (use-package org-cliplink)
 (use-package org-pomodoro)
+(use-package org-download
+  :ensure t
+  ;; Drag-and-drop to `dired`
+  :config
+  (add-hook 'dired-mode-hook 'org-download-enable)
+  ;; The default value is nil, which means use `default-directory'.
+  ;; (setq-default org-download-image-dir ".")
+  (setq-default org-download-method 'directory)
+  ;; (setq-default org-download-screenshot-method "screencapture -i %s")
+  (setq-default org-download-heading-lvl nil)
+  (setq-default org-download-image-dir "./images")
+  ;; have an issue in emacs 29 on drag drop
+  )
+
+;; add todoist integration
+(use-package todoist
+  :config
+  (setq todoist-token "f1a602d7265c89ad5f0b10fe1736031ca12e4881")
+  (setq todoist-backing-buffer "~/Workspace/xing.org/tasks/todoist.org"))
 
 (provide 'init-org)
