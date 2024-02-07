@@ -51,22 +51,39 @@
   (setq org-agenda-custom-commands
       '(("w" "Work Agenda"
          ((agenda "" ((org-agenda-span 1)))
-	  (tags      "+WORK+TODO=\"ONGOING\""
-		     ((org-agenda-overriding-header "Ongoing Tasks")))
-          (tags      "+WORK+TODO=\"NEXT\""
-                     ((org-agenda-overriding-header "Next Tasks")
-		      (org-agenda-sorting-strategy '(todo-state-down priority-down))))
-          (tags-todo "+WORK+TODO=\"TODO\""
-                     ((org-agenda-overriding-header "To-Do Tasks")))
-          (tags-todo "+:WORK:/HOLD|WAITING"
-                     ((org-agenda-overriding-header "Hold/Waiting Tasks"))))
+	  (tags-todo "+WORK" ((org-agenda-overriding-header "")
+		      (org-super-agenda-groups
+		       '((:name "ONGOING Tasks"
+				:todo "ONGOING"
+				:order 1)
+			 (:name "Work Tasks"
+				:and (:todo "NEXT" :tag "STAR")
+				:order 2)
+			 (:name "MISC Tasks"
+				:and (:todo "NEXT" :tag "MISC")
+			        :order 3)
+			 (:name "Email Or Teams"
+				:and (:todo "NEXT" :tag "TEAMS")
+			        :order 4)
+			 (:name "Write Something"
+				:and (:todo "NEXT" :tag "DOC")
+			        :order 5)
+			 (:name "To-Do Tasks"
+				:todo "TODO"
+				:order 7)
+			 (:name "Waiting For"
+				:todo "WAITING"
+				:order 6))
+		      ))))
          nil
          nil)
-	("p" "Personal Agenda"
-	 ((agenda "" ((org-agenda-span 7)))
-	  )
-	 nil
-	 nil)
+	("p" "Test Agenda"
+	 ((alltodo "" ((org-agenda-overriding-header "")
+		      (org-super-agenda-groups
+		      '((:name "Next to do"
+			       :todo "NEXT"
+			       :order 1))
+		      )))))
 	("i" "Inbox"
 	 ((tags      "+INBOX+TODO=\"TODO\""))
 	 nil
@@ -134,5 +151,10 @@
   :config
   (setq todoist-token "f1a602d7265c89ad5f0b10fe1736031ca12e4881")
   (setq todoist-backing-buffer "~/Workspace/xing.org/tasks/todoist.org"))
+
+(use-package org-super-agenda
+  :after org-agenda
+  :config
+  (org-super-agenda-mode))
 
 (provide 'init-org)

@@ -109,6 +109,13 @@
 (require 'init-tools)
 (require 'init-keybinding)
 
+(defun open-init-file ()
+  "Open the init file."
+  (interactive)
+  (find-file user-init-file))
+
+(global-set-key (kbd "C-c i") 'open-init-file)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
