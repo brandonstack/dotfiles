@@ -15,7 +15,7 @@
 (set-face-attribute 'default nil :font "Fira Code Retina" :height 120)
 
 ;;; global config
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+;; (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 ;;; packages
 (require 'package)
@@ -35,6 +35,7 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
+(use-package better-defaults)
 (use-package swiper)
 (use-package counsel
   :bind (("M-x" . counsel-M-x)
@@ -108,13 +109,18 @@
 (require 'init-org)
 (require 'init-tools)
 (require 'init-keybinding)
+(require 'init-ide)
 
+;; global config
 (defun open-init-file ()
   "Open the init file."
   (interactive)
   (find-file user-init-file))
 
 (global-set-key (kbd "C-c i") 'open-init-file)
+(setq vc-follow-symlinks t)
+(defalias 'yes-or-no-p 'y-or-n-p)
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -123,7 +129,7 @@
  ;; If there is more than one, they won't work right.
  '(delete-selection-mode nil)
  '(package-selected-packages
-   '(org-cliplink org-roam-ui general evil projectile magit org-roam visual-fill-column org-bullets helpful ivy-rich which-key rainbow-delimiters doom-themes doom-modeline nerd-icons counsel swiper)))
+   '(better-defaults elpy plantuml-mode org-cliplink org-roam-ui general evil projectile magit org-roam visual-fill-column org-bullets helpful ivy-rich which-key rainbow-delimiters doom-themes doom-modeline nerd-icons counsel swiper)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

@@ -12,6 +12,9 @@
                           '(("^ *\\([-]\\) "
                             (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
+  ;; Set body font in org-mode.
+  ;; (set-face-attribute 'org-default nil :font "Carlito" :height 120)
+  
   ;; Set faces for heading levels
   (dolist (face '((org-level-1 . 1.2)
                   (org-level-2 . 1.1)
@@ -35,6 +38,14 @@
   (setq org-log-done 'time)
   (setq org-log-into-drawer t)
   (setq org-cycle-separator-lines -1)
+
+  ;; Improve org mode looks
+  (setq-default org-startup-indented t
+                org-pretty-entities t
+                org-use-sub-superscripts "{}"
+                org-hide-emphasis-markers t
+                org-startup-with-inline-images t
+                org-image-actual-width '(300))
 
   (setq org-todo-keywords
    '((sequence "TODO(t)" "NEXT(n)" "ONGOING(o)" "|" "DONE(d)")
@@ -77,13 +88,13 @@
 		      ))))
          nil
          nil)
-	("p" "Test Agenda"
-	 ((alltodo "" ((org-agenda-overriding-header "")
-		      (org-super-agenda-groups
-		      '((:name "Next to do"
-			       :todo "NEXT"
-			       :order 1))
-		      )))))
+	("p" "Personal Agenda"
+	 ((tags-todo "-WORK" ((org-agenda-overriding-header "")
+			      (org-super-agenda-groups
+			       '((:name "Next to do"
+					:todo "NEXT"
+					:order 1))
+			       )))))
 	("i" "Inbox"
 	 ((tags      "+INBOX+TODO=\"TODO\""))
 	 nil
@@ -156,5 +167,16 @@
   :after org-agenda
   :config
   (org-super-agenda-mode))
+
+(use-package plantuml-mode
+  :config
+  ;; Enable plantuml-mode for PlantUML files
+  (setq plantuml-jar-path "~/.emacs.d/modules/plantuml-mit-1.2024.0.jar")
+  (setq plantuml-default-exec-mode 'jar)
+  (setq org-plantuml-jar-path "~/.emacs.d/modules/plantuml-mit-1.2024.0.jar")
+  (add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
+  (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+  (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
+  )
 
 (provide 'init-org)
