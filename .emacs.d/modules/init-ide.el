@@ -3,7 +3,10 @@
 (use-package elpy
   :ensure t
   :init
-  (elpy-enable))
+  (elpy-enable)
+  (pyvenv-mode)
+  :config
+  (pyvenv-workon "."))
 
 (use-package flycheck
   :after elpy
@@ -13,11 +16,11 @@
   (add-hook 'elpy-mode-hook 'flycheck-mode))
 
 ;; run autopep8 on save
-;;(use-package py-autopep8
-;;  :after elpy
-;;  :config
-;;  (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save))
+(use-package py-autopep8
+  :after elpy
+  :hook ((python-mode) . py-autopep8-mode))
+
 ;; black formatting on save
-(use-package blacken)
+;; (use-package blacken)
 
 (provide 'init-ide)
