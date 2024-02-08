@@ -1,4 +1,4 @@
-(use-package org-roam)
+;; (use-package org-roam)
 
 ;; org-mode
 (defun org-mode-setup ()

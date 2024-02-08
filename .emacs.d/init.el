@@ -11,8 +11,14 @@
 (setq visible-bell t)
 
 (add-to-list 'load-path "~/.emacs.d/modules")
+
+
 ;; set font
 (set-face-attribute 'default nil :font "Fira Code Retina" :height 120)
+(when (string-match "-[Mm]icrosoft" operating-system-release)
+  ;; WSL: WSL1 has "-Microsoft", WSL2 has "-microsoft-standard"
+  (set-face-attribute 'default nil :font "Fira Code Retina" :height 140)
+  )
 
 ;;; global config
 ;; (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -21,7 +27,7 @@
 (require 'package)
 
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                         ("org" . "https://orgmode.org/elpa/")
+                       ;;  ("org" . "https://orgmode.org/elpa/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
 
 (package-initialize)
