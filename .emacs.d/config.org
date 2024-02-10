@@ -3,7 +3,7 @@
   (setq my/default-font-size 130)
   (setq my/wsl-font-size 140)
   (setq my/org-folder "~/Workspace/xing.org")
-  (setq my/org-tasks-folder"~/Workspace/xing.org/tasks")
+  (setq my/org-tasks-folder "~/Workspace/xing.org/tasks")
   (setq my/config-file "~/.emacs.d/config.org")
   (setq my/plantuml-jar "~/.local/bin/plantuml-mit-1.2024.0.jar")
   (setenv "WORKON_HOME" "~/Workspace/coding/.venv")
@@ -46,6 +46,74 @@
 
 #+RESULTS:
 : yes-or-no-p
+
+* Keybinding Setup
+** Open init file
+#+begin_src emacs-lisp
+  (defun open-config-file ()
+    "Open the init file."
+    (interactive)
+    (find-file my/config-file))
+
+  (global-set-key (kbd "C-c i") 'open-config-file)
+#+end_src
+
+#+RESULTS:
+: open-config-file
+
+** general.el
+#+begin_src emacs-lisp
+  (use-package general
+    :config
+    (general-create-definer my/leader-keys
+      :keymaps '(normal visual emacs)
+      :prefix "SPC"
+      :global-prefix "C-SPC")
+
+    ;; example keybindings
+    (my/leader-keys
+     "t"  '(:ignore t :which-key "toggles")
+     "tt" '(counsel-load-theme :which-key "choose theme")
+
+     "q"  '(:ignore t :which-key "Quit")
+     "qq" '(kill-emacs :which-key "Kill Emacs")
+     "qr" '(restart-emacs :which-key "Restart Emacs")
+
+     "f"  '(:ignore t :which-key "Files")
+     "ff" '(find-file :which-key "Find File")
+     "fs" '(save-buffer :which-key "Save Buffer")
+     "fi" '(open-config-file :which-key "Open Config File")
+     "fD" '(delete-file :which-key "Delete File")
+
+     "b"  '(:ignore t :which-key "Buffer")
+     "bb" '(counsel-ibuffer :which-key "Switch Buffer")
+     "bk" '(kill-buffer :which-key "Kill Buffer")
+
+     "w"  '(:ignore t :which-key "Window")
+     "wv" '(split-window-below :which-key "Split Vertically")
+     "wh" '(split-window-right :which-key "Split Vertically")
+     "ww" '(other-window :which-key "Switch Windows")
+     "wq" '(delete-window :which-key "kill-window")
+
+     "h"  '(:keymap help-map :which-key "projectile")
+     )
+    )
+#+end_src
+
+#+RESULTS:
+: t
+
+*** NEXT Setup SPC prefix keybinding.
+
+** evil
+#+begin_src emacs-lisp
+  (use-package evil
+    :config
+    (evil-mode 1)
+    (define-key evil-motion-state-map (kbd "TAB") nil))
+#+end_src
+
+** Keybindings
 
 * Beautify the UI
 ** Basic setup
@@ -110,7 +178,6 @@
   (use-package swiper)
   (use-package counsel
     :bind (("M-x" . counsel-M-x)
-           ("C-<tab>" . counsel-switch-buffer)
            ("C-x b" . counsel-ibuffer)
            ("C-x C-f" . counsel-find-file)
            :map minibuffer-local-map
@@ -162,42 +229,6 @@
     ([remap describe-variable] . counsel-describe-variable)
     ([remap describe-key] . helpful-key))
 #+end_src
-
-* Keybinding Setup
-** general.el
-#+begin_src emacs-lisp
-  (use-package general
-    :config
-    (general-define-key
-     :prefix "C-c"
-     ;; bind "C-c a" to 'org-agenda
-     "a" 'org-agenda
-     "b" 'counsel-bookmark
-     "c" 'org-capture))
-#+end_src
-*** NEXT Setup SPC prefix keybinding.
-** evil
-#+begin_src emacs-lisp
-  (use-package evil
-    :config
-    (evil-mode 1)
-    (define-key evil-motion-state-map (kbd "TAB") nil))
-#+end_src
-
-** Keybindings
-
-** Open init file
-#+begin_src emacs-lisp
-  (defun open-config-file ()
-    "Open the init file."
-    (interactive)
-    (find-file my/config-file))
-
-  (global-set-key (kbd "C-c i") 'open-config-file)
-#+end_src
-
-#+RESULTS:
-: open-config-file
 
 * Org Mode
 ** Modes
@@ -342,13 +373,16 @@
 
 ** Org Babel
 ** The Org Setup
+:LOGBOOK:
+CLOCK: [2024-02-10 Sat 14:25]
+:END:
 #+begin_src emacs-lisp
   (use-package org
     :hook (org-mode . org-mode-setup)
     :config
     (setq org-ellipsis " ▾")
     (setq org-directory my/org-folder)
-    (setq org-agenda-files '(my/org-tasks-folder))
+    (setq org-agenda-files (list my/org-tasks-folder "~/.emacs.d/config.org"))
     (setq org-default-notes-file (concat my/org-tasks-folder "/refile.org"))
     (setq org-agenda-start-with-log-mode t)
     (setq org-log-done 'time)
@@ -365,7 +399,7 @@
 #+end_src
 
 #+RESULTS:
-| org-mode-visual-fill | org-bullets-mode | #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | org-mode-setup | (lambda nil (display-line-numbers-mode 0)) | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-fold-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes |
+| #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | org-mode-setup | org-bullets-mode | org-mode-visual-fill | (lambda nil (display-line-numbers-mode 0)) | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-fold-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes |
 ** org-roam
 *** Roam
 #+begin_src emacs-lisp
@@ -452,11 +486,31 @@
     (setq todoist-backing-buffer "~/Workspace/xing.org/tasks/todoist.org"))
 #+end_src
 
+** Keybindings
+#+begin_src emacs-lisp
+  (my/leader-keys
+    "o"  '(:ignore t :which-key "Org Mode")
+    "oa" '(org-agenda :which-key "Org Agenda")
+    "oc" '(org-capture :which-key "Org Capture")
+    "ov" '(org-cliplink :which-key "Org Cliplink")
+    "op" '(org-pomodoro :which-key "Org Pomodoro")
+    "or"  '(:ignore t :which-key "Org Roam")
+    "orf"  '(org-roam-node-find :which-key "Find Node")
+    "ori"  '(org-roam-node-insert :which-key "Insert Node")
+    "orl"  '(org-roam-buffer-toggle :which-key "Toggle Buffer")
+    "org"  '(org-roam-mode :which-key "UI Mode")
+    )
+#+end_src
+
+#+RESULTS:
+
 * Development
 ** Enhancement
 *** Magit
 #+begin_src emacs-lisp
-(use-package magit)
+  (use-package magit)
+  (my/leader-keys
+    "g" '(magit-status :which-key "Magit"))
 #+end_src
 
 #+RESULTS:
@@ -477,10 +531,12 @@
 
   (use-package counsel-projectile
     :config (counsel-projectile-mode))
+
+  (my/leader-keys
+    "p"  '(:keymap projectile-command-map :package projectile :which-key "projectile"))
 #+end_src
 
 #+RESULTS:
-: t
 
 *** Rainbow Delimiters
 #+begin_src emacs-lisp
