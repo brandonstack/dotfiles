@@ -1,6 +1,7 @@
 * Variables and Environments
 #+begin_src emacs-lisp
   (setq my/default-font-size 130)
+  (setq my/default-variable-font-size 130)
   (setq my/wsl-font-size 140)
   (setq my/org-folder "~/Workspace/xing.org")
   (setq my/org-tasks-folder "~/Workspace/xing.org/tasks")
@@ -11,7 +12,6 @@
 
 #+RESULTS:
 : ~/Workspace/coding/.venv
-
 * System setup
 ** Package System Setup
 *** Package Source
@@ -46,7 +46,6 @@
 
 #+RESULTS:
 : yes-or-no-p
-
 * Keybinding Setup
 ** Open init file
 #+begin_src emacs-lisp
@@ -60,7 +59,6 @@
 
 #+RESULTS:
 : open-config-file
-
 ** general.el
 #+begin_src emacs-lisp
   (use-package general
@@ -72,6 +70,8 @@
 
     ;; example keybindings
     (my/leader-keys
+     ":" '(eval-expression :which-key "Eval Expression")
+
      "t"  '(:ignore t :which-key "toggles")
      "tt" '(counsel-load-theme :which-key "choose theme")
 
@@ -80,20 +80,28 @@
      "qr" '(restart-emacs :which-key "Restart Emacs")
 
      "f"  '(:ignore t :which-key "Files")
-     "ff" '(find-file :which-key "Find File")
+     "ff" '(counsel-find-file :which-key "Find File")
      "fs" '(save-buffer :which-key "Save Buffer")
      "fi" '(open-config-file :which-key "Open Config File")
      "fD" '(delete-file :which-key "Delete File")
 
+     ;; buffer
      "b"  '(:ignore t :which-key "Buffer")
-     "bb" '(counsel-ibuffer :which-key "Switch Buffer")
+     "bb" '(counsel-switch-buffer :which-key "Switch Buffer")
      "bk" '(kill-buffer :which-key "Kill Buffer")
+     "bX" '(scratch-buffer :which-key "Scratch Buffer")
 
+     ;; window
      "w"  '(:ignore t :which-key "Window")
-     "wv" '(split-window-below :which-key "Split Vertically")
-     "wh" '(split-window-right :which-key "Split Vertically")
+     "wb" '(split-window-below :which-key "Split Vertically")
+     "wd" '(split-window-below :which-key "Split Vertically")
+     "wr" '(split-window-right :which-key "Split Vertically")
      "ww" '(other-window :which-key "Switch Windows")
-     "wq" '(delete-window :which-key "kill-window")
+     "wq" '(delete-window :which-key "kill window")
+     "wh" '(evil-window-left :which-key "Left Window")
+     "wl" '(evil-window-right :which-key "Right Window")
+     "wk" '(evil-window-up :which-key "Window Up")
+     "wj" '(evil-window-down :which-key "Window Down")
 
      "h"  '(:keymap help-map :which-key "projectile")
      )
@@ -103,8 +111,7 @@
 #+RESULTS:
 : t
 
-*** NEXT Setup SPC prefix keybinding.
-
+*** TODO speed up buffer switching :[[https://github.com/niyumard/Doom-Emacs-Cheat-Sheet?tab=readme-ov-file#buffers][doom emacs buffer keys]] 
 ** evil
 #+begin_src emacs-lisp
   (use-package evil
@@ -112,9 +119,6 @@
     (evil-mode 1)
     (define-key evil-motion-state-map (kbd "TAB") nil))
 #+end_src
-
-** Keybindings
-
 * Beautify the UI
 ** Basic setup
 #+begin_src emacs-lisp
@@ -132,11 +136,16 @@
 
 ** Font setup
 #+begin_src emacs-lisp
-  (if (string-match "-[Mm]icrosoft" operating-system-release)
-      ;; WSL: WSL1 has "-Microsoft", WSL2 has "-microsoft-standard"
-      (set-face-attribute 'default nil :font "Fira Code Retina" :height my/wsl-font-size)
-    (set-face-attribute 'default nil :font "Fira Code Retina" :height my/default-font-size)
-    )
+    ;;(if (string-match "-[Mm]icrosoft" operating-system-release)
+        ;; WSL: WSL1 has "-Microsoft", WSL2 has "-microsoft-standard"
+    ;;  (set-face-attribute 'default nil :font "Fira Code Retina" :height my/wsl-font-size)
+  (set-face-attribute 'default nil :font "Fira Code Retina" :height my/default-font-size)
+    ;;  )
+  ;; Set the fixed pitch face
+  (set-face-attribute 'fixed-pitch nil :font "Fira Code Retina" :height my/default-font-size)
+
+  ;; Set the variable pitch face
+  (set-face-attribute 'variable-pitch nil :font "Cantarell" :height my/default-variable-font-size :weight 'regular)
 #+end_src
 
 #+RESULTS:
@@ -171,15 +180,22 @@
 
 ** Text Scaling
 ** Dashboard
+#+begin_src emacs-lisp
+  (use-package page-break-lines)
+  (use-package dashboard
+    :ensure t
+    :config
+    (dashboard-setup-startup-hook))
+#+end_src
 
+#+RESULTS:
+: t
 * UI Enhancement
 ** Ivy and Counsel
 #+begin_src emacs-lisp
   (use-package swiper)
   (use-package counsel
     :bind (("M-x" . counsel-M-x)
-           ("C-x b" . counsel-ibuffer)
-           ("C-x C-f" . counsel-find-file)
            :map minibuffer-local-map
            ("C-r" . 'counsel-minibuffer-history))
     :config
@@ -229,15 +245,18 @@
     ([remap describe-variable] . counsel-describe-variable)
     ([remap describe-key] . helpful-key))
 #+end_src
-
 * Org Mode
 ** Modes
 #+begin_src emacs-lisp
   (defun org-mode-setup ()
     (org-indent-mode)
-    ;; (variable-pitch-mode 1)
+    (variable-pitch-mode 1)
     (visual-line-mode 1))
 #+end_src
+
+#+RESULTS:
+: org-mode-setup
+
 ** Beautify the org
 *** Center Org Buffers
 #+begin_src emacs-lisp
@@ -273,7 +292,21 @@
                     (org-level-6 . 0.8)
                     (org-level-7 . 0.8)
                     (org-level-8 . 0.8)))
-      (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face))))
+      (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
+
+    ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+    (set-face-attribute 'org-block nil    :foreground nil :inherit 'fixed-pitch)
+    (set-face-attribute 'org-table nil    :inherit 'fixed-pitch)
+    (set-face-attribute 'org-formula nil  :inherit 'fixed-pitch)
+    (set-face-attribute 'org-code nil     :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-table nil    :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+    (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+    (set-face-attribute 'org-checkbox nil  :inherit 'fixed-pitch)
+    (set-face-attribute 'line-number nil :inherit 'fixed-pitch)
+    (set-face-attribute 'line-number-current-line nil :inherit 'fixed-pitch)
+    )
 #+end_src
 
 #+RESULTS:
@@ -492,25 +525,30 @@ CLOCK: [2024-02-10 Sat 14:25]
     "o"  '(:ignore t :which-key "Org Mode")
     "oa" '(org-agenda :which-key "Org Agenda")
     "oc" '(org-capture :which-key "Org Capture")
-    "ov" '(org-cliplink :which-key "Org Cliplink")
+    "oy" '(org-cliplink :which-key "Org Cliplink")
     "op" '(org-pomodoro :which-key "Org Pomodoro")
-    "or"  '(:ignore t :which-key "Org Roam")
-    "orf"  '(org-roam-node-find :which-key "Find Node")
-    "ori"  '(org-roam-node-insert :which-key "Insert Node")
-    "orl"  '(org-roam-buffer-toggle :which-key "Toggle Buffer")
-    "org"  '(org-roam-mode :which-key "UI Mode")
+    "ot" '(org-todo :which-key "Org TODO")
+    "oq" '(org-set-tags-command :which-key "Set Tag")
+    "ol" '(org-insert-link :which-key "Insert Link")
+    "o/" '(org-sparse-tree :which-key "Sparse Tree")
+
+    "n"  '(:ignore t :which-key "Org Roam")
+    "nn"  '(org-roam-node-find :which-key "Find Node")
+    "ni"  '(org-roam-node-insert :which-key "Insert Node")
+    "nl"  '(org-roam-buffer-toggle :which-key "Toggle Buffer")
+    "ng"  '(org-roam-mode :which-key "UI Mode")
     )
 #+end_src
 
 #+RESULTS:
-
 * Development
 ** Enhancement
 *** Magit
 #+begin_src emacs-lisp
   (use-package magit)
   (my/leader-keys
-    "g" '(magit-status :which-key "Magit"))
+    "g"  '(:ignore t :which-key "Magit")
+    "gg" '(magit-status :which-key "Magit Status"))
 #+end_src
 
 #+RESULTS:
@@ -566,6 +604,7 @@ Use company everywhere.
 #+RESULTS:
 | global-company-mode | org-persist-load-all | x-wm-set-size-hint | tramp-register-archive-autoload-file-name-handler | magit-maybe-define-global-key-bindings | magit-auto-revert-mode--init-kludge | magit-startup-asserts | magit-version | table--make-cell-map |
 
+*** TODO Terminal setup / vterm
 ** Python
 *** elpy
 #+begin_src emacs-lisp
@@ -575,8 +614,20 @@ Use company everywhere.
     (elpy-enable)
     (pyvenv-mode)
     :config
-    (pyvenv-workon "."))
+    (pyvenv-workon ".")
+
+    ;; Use IPython for REPL
+    (setq python-shell-interpreter "jupyter"
+          python-shell-interpreter-args "console --simple-prompt"
+          python-shell-prompt-detect-failure-warning nil)
+    (add-to-list 'python-shell-completion-native-disabled-interpreters
+                 "jupyter")
+    )
 #+end_src
+
+#+RESULTS:
+: t
+
 *** flycheck integration
 #+begin_src emacs-lisp
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
@@ -593,3 +644,11 @@ auto format on save
     :after elpy
     :hook ((python-mode) . py-autopep8-mode))
 #+end_src
+
+
+*** ein
+#+begin_src emacs-lisp
+  (use-package ein)
+#+end_src
+
+#+RESULTS:
