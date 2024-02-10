@@ -605,6 +605,8 @@ Use company everywhere.
 | global-company-mode | org-persist-load-all | x-wm-set-size-hint | tramp-register-archive-autoload-file-name-handler | magit-maybe-define-global-key-bindings | magit-auto-revert-mode--init-kludge | magit-startup-asserts | magit-version | table--make-cell-map |
 
 *** TODO Terminal setup / vterm
+
+*** TODO LSP Setup
 ** Python
 *** elpy
 #+begin_src emacs-lisp
@@ -646,9 +648,17 @@ auto format on save
 #+end_src
 
 
-*** ein
+*** TODO ein
 #+begin_src emacs-lisp
   (use-package ein)
 #+end_src
 
 #+RESULTS:
+
+** TODO json mode:[[https://github.com/json-emacs/json-mode][json-mode]] 
+
+** TODO Use spc start keybindings only for no interaction (repeat) command.
+
+** TODO Dired
+
+** TODO GTD
