@@ -1,4 +1,5 @@
 * Variables and Environments
+
 #+begin_src emacs-lisp
   (setq my/default-font-size 130)
   (setq my/default-variable-font-size 130)
@@ -8,13 +9,40 @@
   (setq my/config-file "~/.emacs.d/config.org")
   (setq my/plantuml-jar "~/.local/bin/plantuml-mit-1.2024.0.jar")
   (setenv "WORKON_HOME" "~/Workspace/coding/.venv")
+
+  (defvar my/frame-transparency '(90 . 90))
 #+end_src
 
 #+RESULTS:
-: ~/Workspace/coding/.venv
+: my/frame-transparency
+
 * System setup
-** Package System Setup
+
+** Startup Performance
+
+#+begin_src emacs-lisp
+
+  ;; The default is 800 kilobytes.  Measured in bytes.
+  (setq gc-cons-threshold (* 50 1000 1000))
+
+  (defun my/display-startup-time ()
+    (message "Emacs loaded in %s with %d garbage collections."
+             (format "%.2f seconds"
+                     (float-time
+                       (time-subtract after-init-time before-init-time)))
+             gcs-done))
+
+  (add-hook 'emacs-startup-hook #'my/display-startup-time)
+
+#+end_src
+
+#+RESULTS:
+| my/display-startup-time | dashboard-initialize |
+
+** Package System
+
 *** Package Source
+
 #+BEGIN_SRC emacs-lisp
   (require 'package)
 
@@ -30,15 +58,37 @@
 #+RESULTS:
 
 *** Use-Package
+
 #+BEGIN_SRC emacs-lisp
+
   (unless (package-installed-p 'use-package)
     (package-install 'use-package))
 
   (require 'use-package)
   (setq use-package-always-ensure t)
+
 #+END_SRC
 
+*** Automatic Package Updates
+
+#+begin_src emacs-lisp
+
+  (use-package auto-package-update
+    :custom
+    (auto-package-update-interval 7)
+    (auto-package-update-prompt-before-update t)
+    (auto-package-update-hide-results t)
+    :config
+    (auto-package-update-maybe)
+    (auto-package-update-at-time "09:00"))
+
+#+end_src
+
+#+RESULTS:
+: t
+
 ** Global Config
+
 #+begin_src emacs-lisp
   (setq vc-follow-symlinks t)
   (defalias 'yes-or-no-p 'y-or-n-p)
@@ -46,22 +96,26 @@
 
 #+RESULTS:
 : yes-or-no-p
-* Keybinding Setup
-** Open init file
+
+** Open config file
+
 #+begin_src emacs-lisp
+
   (defun open-config-file ()
     "Open the init file."
     (interactive)
     (find-file my/config-file))
 
-  (global-set-key (kbd "C-c i") 'open-config-file)
 #+end_src
 
-#+RESULTS:
-: open-config-file
-** general.el
+** Keybinding Setup
+
+*** general.el
+
 #+begin_src emacs-lisp
+
   (use-package general
+    :after evil
     :config
     (general-create-definer my/leader-keys
       :keymaps '(normal visual emacs)
@@ -70,58 +124,73 @@
 
     ;; example keybindings
     (my/leader-keys
-     ":" '(eval-expression :which-key "Eval Expression")
+      ":" '(eval-expression :which-key "Eval Expression")
 
-     "t"  '(:ignore t :which-key "toggles")
-     "tt" '(counsel-load-theme :which-key "choose theme")
+      "t"  '(:ignore t :which-key "toggles")
+      "tt" '(counsel-load-theme :which-key "choose theme")
 
-     "q"  '(:ignore t :which-key "Quit")
-     "qq" '(kill-emacs :which-key "Kill Emacs")
-     "qr" '(restart-emacs :which-key "Restart Emacs")
+      "q"  '(:ignore t :which-key "Quit")
+      "qq" '(kill-emacs :which-key "Kill Emacs")
+      "qr" '(restart-emacs :which-key "Restart Emacs")
 
-     "f"  '(:ignore t :which-key "Files")
-     "ff" '(counsel-find-file :which-key "Find File")
-     "fs" '(save-buffer :which-key "Save Buffer")
-     "fi" '(open-config-file :which-key "Open Config File")
-     "fD" '(delete-file :which-key "Delete File")
+      "f"  '(:ignore t :which-key "Files")
+      "ff" '(counsel-find-file :which-key "Find File")
+      "fs" '(save-buffer :which-key "Save Buffer")
+      "fi" '(open-config-file :which-key "Open Config File")
+      "fD" '(delete-file :which-key "Delete File")
 
-     ;; buffer
-     "b"  '(:ignore t :which-key "Buffer")
-     "bb" '(counsel-switch-buffer :which-key "Switch Buffer")
-     "bk" '(kill-buffer :which-key "Kill Buffer")
-     "bX" '(scratch-buffer :which-key "Scratch Buffer")
+      ;; buffer
+      "b"  '(:ignore t :which-key "Buffer")
+      "bb" '(counsel-switch-buffer :which-key "Switch Buffer")
+      "bk" '(kill-buffer :which-key "Kill Buffer")
+      "bX" '(scratch-buffer :which-key "Scratch Buffer")
 
-     ;; window
-     "w"  '(:ignore t :which-key "Window")
-     "wb" '(split-window-below :which-key "Split Vertically")
-     "wd" '(split-window-below :which-key "Split Vertically")
-     "wr" '(split-window-right :which-key "Split Vertically")
-     "ww" '(other-window :which-key "Switch Windows")
-     "wq" '(delete-window :which-key "kill window")
-     "wh" '(evil-window-left :which-key "Left Window")
-     "wl" '(evil-window-right :which-key "Right Window")
-     "wk" '(evil-window-up :which-key "Window Up")
-     "wj" '(evil-window-down :which-key "Window Down")
+      ;; window
+      "w"  '(:ignore t :which-key "Window")
+      "wb" '(split-window-below :which-key "New Window Below")
+      "wd" '(split-window-below :which-key "New Window Below")
+      "wr" '(split-window-right :which-key "New Window Right")
+      "ww" '(other-window :which-key "Switch Windows")
+      "wq" '(delete-window :which-key "kill window")
+      "wh" '(evil-window-left :which-key "Left Window")
+      "wl" '(evil-window-right :which-key "Right Window")
+      "wk" '(evil-window-up :which-key "Window Up")
+      "wj" '(evil-window-down :which-key "Window Down")
 
-     "h"  '(:keymap help-map :which-key "projectile")
-     )
+      "h"  '(:keymap help-map :which-key "projectile")
+      )
     )
+
 #+end_src
 
 #+RESULTS:
 : t
 
-*** TODO speed up buffer switching :[[https://github.com/niyumard/Doom-Emacs-Cheat-Sheet?tab=readme-ov-file#buffers][doom emacs buffer keys]] 
-** evil
+*** evil
+
 #+begin_src emacs-lisp
+
   (use-package evil
     :config
     (evil-mode 1)
-    (define-key evil-motion-state-map (kbd "TAB") nil))
+    (evil-set-initial-state 'messages-buffer-mode 'normal)
+    (evil-set-initial-state 'dashboard-mode 'normal)
+
+    ;; stop mapping <tab>
+    (define-key evil-motion-state-map (kbd "TAB") nil)
+    )
+
 #+end_src
-* Beautify the UI
+
+#+RESULTS:
+: t
+
+* UI Configuration
+
 ** Basic setup
+
 #+begin_src emacs-lisp
+
   (setq inhibit-startup-message t)
 
   (scroll-bar-mode -1)        ; disable visual scrollbar
@@ -132,11 +201,43 @@
 
   ;; setup visiable bell
   (setq visible-bell t)
+  
 #+end_src
 
-** Font setup
+** Transparency
 #+begin_src emacs-lisp
-    ;;(if (string-match "-[Mm]icrosoft" operating-system-release)
+
+  ;; Set frame transparency
+  (set-frame-parameter (selected-frame) 'alpha my/frame-transparency)
+  (add-to-list 'default-frame-alist `(alpha . ,my/frame-transparency))
+  (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
+  (add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+#+end_src
+
+#+RESULTS:
+: ((fullscreen . maximized) (alpha 90 . 90) (vertical-scroll-bars) (left-fringe . 10) (right-fringe . 10))
+
+** Number line mode
+#+begin_src emacs-lisp
+
+  (global-display-line-numbers-mode t)
+
+  (dolist (mode '(org-mode-hook
+                  term-mode-hook
+                  shell-mode-hook
+                  eshell-mode-hook))
+    (add-hook mode (lambda () (display-line-numbers-mode 0))))
+  
+#+end_src
+
+#+RESULTS:
+
+** Font setup
+
+#+begin_src emacs-lisp
+
+  ;;(if (string-match "-[Mm]icrosoft" operating-system-release)
         ;; WSL: WSL1 has "-Microsoft", WSL2 has "-microsoft-standard"
     ;;  (set-face-attribute 'default nil :font "Fira Code Retina" :height my/wsl-font-size)
   (set-face-attribute 'default nil :font "Fira Code Retina" :height my/default-font-size)
@@ -146,53 +247,55 @@
 
   ;; Set the variable pitch face
   (set-face-attribute 'variable-pitch nil :font "Cantarell" :height my/default-variable-font-size :weight 'regular)
+  
 #+end_src
 
 #+RESULTS:
 
 ** Color theme
+
 #+begin_src emacs-lisp
+
   (use-package nerd-icons)
-  (use-package doom-themes)
-  (load-theme 'doom-one t)
+  (use-package doom-themes
+    :config
+    (load-theme 'doom-one t)
+    )
+
 #+end_src
 
+#+RESULTS:
+: t
+
 ** Modeline
+
 #+begin_src emacs-lisp
+
   (use-package doom-modeline
     :ensure t
     :init (doom-modeline-mode 1)
     :custom ((doom-modeline-height 15)))
+  
 #+end_src
 
-** Number line mode
-#+begin_src emacs-lisp
-  (global-display-line-numbers-mode t)
-
-  (dolist (mode '(org-mode-hook
-                  term-mode-hook
-                  shell-mode-hook
-                  eshell-mode-hook))
-    (add-hook mode (lambda () (display-line-numbers-mode 0))))
-#+end_src
-
-#+RESULTS:
-
-** Text Scaling
 ** Dashboard
+
 #+begin_src emacs-lisp
+
   (use-package page-break-lines)
   (use-package dashboard
     :ensure t
     :config
     (dashboard-setup-startup-hook))
+  
 #+end_src
 
 #+RESULTS:
 : t
-* UI Enhancement
+
 ** Ivy and Counsel
 #+begin_src emacs-lisp
+
   (use-package swiper)
   (use-package counsel
     :bind (("M-x" . counsel-M-x)
@@ -222,19 +325,25 @@
   (use-package ivy-rich
     :init
     (ivy-rich-mode 1))
+  
 #+end_src
 
 ** Which Key
+
 #+begin_src emacs-lisp
+
   (use-package which-key
     :init (which-key-mode)
     :diminish which-key-mode
     :config
     (setq which-key-idle-delay 0.3))
+  
 #+end_src
 
 ** Helpful
+
 #+begin_src emacs-lisp
+
   (use-package helpful
     :custom
     (counsel-describe-function-function #'helpful-callable)
@@ -244,8 +353,11 @@
     ([remap describe-command] . helpful-command)
     ([remap describe-variable] . counsel-describe-variable)
     ([remap describe-key] . helpful-key))
+  
 #+end_src
+
 * Org Mode
+
 ** Modes
 #+begin_src emacs-lisp
   (defun org-mode-setup ()
@@ -325,6 +437,7 @@
 | org-bullets-mode | #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | org-mode-setup | (lambda nil (display-line-numbers-mode 0)) | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-fold-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes |
 
 ** NEXT Capture: Setup my capture system
+
 ** The TODO system setup
 #+begin_src emacs-lisp
   (defun my/org-todo-setup ()
@@ -347,6 +460,7 @@
 : my/org-todo-setup
 
 ** Refile
+
 ** Agenda
 *** Super Agenda
 #+begin_src emacs-lisp
@@ -404,8 +518,8 @@
 #+RESULTS:
 : my/org-custom-agenda
 
-** Org Babel
 ** The Org Setup
+
 :LOGBOOK:
 CLOCK: [2024-02-10 Sat 14:25]
 :END:
@@ -433,7 +547,41 @@ CLOCK: [2024-02-10 Sat 14:25]
 
 #+RESULTS:
 | #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | org-mode-setup | org-bullets-mode | org-mode-visual-fill | (lambda nil (display-line-numbers-mode 0)) | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-fold-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes |
-** org-roam
+
+** Org Babel
+#+begin_src emacs-lisp
+
+  (with-eval-after-load 'org
+    (org-babel-do-load-languages
+        'org-babel-load-languages
+        '((emacs-lisp . t)
+        (python . t)))
+
+    (push '("conf-unix" . conf-unix) org-src-lang-modes))
+
+#+end_src
+
+#+RESULTS:
+: ((conf-unix . conf-unix) (plantuml . plantuml) (C . c) (C++ . c++) (asymptote . asy) (bash . sh) (beamer . latex) (calc . fundamental) (cpp . c++) (ditaa . artist) (desktop . conf-desktop) (dot . fundamental) (elisp . emacs-lisp) (ocaml . tuareg) (screen . shell-script) (shell . sh) (sqlite . sql) (toml . conf-toml))
+
+** Structure Templates
+#+begin_src emacs-lisp
+
+  (with-eval-after-load 'org
+    ;; This is needed as of Org 9.2
+    (require 'org-tempo)
+
+    (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+    (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+    (add-to-list 'org-structure-template-alist '("py" . "src python")))
+
+#+end_src
+
+#+RESULTS:
+: ((py . src python) (el . src emacs-lisp) (sh . src shell) (a . export ascii) (c . center) (C . comment) (e . example) (E . export) (h . export html) (l . export latex) (q . quote) (s . src) (v . verse))
+
+** Org Roam
+
 *** Roam
 #+begin_src emacs-lisp
   (use-package org-roam
@@ -451,6 +599,7 @@ CLOCK: [2024-02-10 Sat 14:25]
     :config
     (org-roam-db-autosync-mode))
 #+end_src
+
 *** org-roam-ui
 #+begin_src emacs-lisp
   (use-package org-roam-ui
@@ -465,6 +614,7 @@ CLOCK: [2024-02-10 Sat 14:25]
 #+RESULTS:
 
 ** Plugins
+
 *** org-cliplink
 #+begin_src emacs-lisp
   (use-package org-cliplink)
@@ -520,6 +670,7 @@ CLOCK: [2024-02-10 Sat 14:25]
 #+end_src
 
 ** Keybindings
+
 #+begin_src emacs-lisp
   (my/leader-keys
     "o"  '(:ignore t :which-key "Org Mode")
@@ -534,6 +685,7 @@ CLOCK: [2024-02-10 Sat 14:25]
 
     "n"  '(:ignore t :which-key "Org Roam")
     "nn"  '(org-roam-node-find :which-key "Find Node")
+    "nf"  '(org-roam-node-find :which-key "Find Node")
     "ni"  '(org-roam-node-insert :which-key "Insert Node")
     "nl"  '(org-roam-buffer-toggle :which-key "Toggle Buffer")
     "ng"  '(org-roam-mode :which-key "UI Mode")
@@ -541,9 +693,61 @@ CLOCK: [2024-02-10 Sat 14:25]
 #+end_src
 
 #+RESULTS:
+
+** GTD Setup
+
 * Development
+
 ** Enhancement
-*** Magit
+
+*** Rainbow Delimiters
+
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
+#+end_src
+
+#+RESULTS:
+| rainbow-delimiters-mode |
+
+*** Flycheck
+
+#+begin_src emacs-lisp
+  (use-package flycheck
+    :ensure t
+    :init (global-flycheck-mode))
+#+end_src
+
+#+RESULTS:
+
+*** Snippet
+
+#+begin_src emacs-lisp
+
+  (use-package yasnippet
+    :config
+    (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
+    (yas-global-mode 1))
+
+  (use-package yasnippet-snippets)
+
+#+end_src
+
+#+RESULTS:
+
+*** Commenting
+#+begin_src emacs-lisp
+
+  (use-package evil-nerd-commenter
+    :bind ("M-/" . evilnc-comment-or-uncomment-lines))
+
+#+end_src
+
+#+RESULTS:
+: evilnc-comment-or-uncomment-lines
+
+** Magit
+
 #+begin_src emacs-lisp
   (use-package magit)
   (my/leader-keys
@@ -553,7 +757,8 @@ CLOCK: [2024-02-10 Sat 14:25]
 
 #+RESULTS:
 
-*** Projectile
+** Projectile
+
 #+begin_src emacs-lisp
   (use-package projectile
     :diminish projectile-mode
@@ -576,39 +781,75 @@ CLOCK: [2024-02-10 Sat 14:25]
 
 #+RESULTS:
 
-*** Rainbow Delimiters
+** Language Server Portal
+
+*** LSP Mode
 #+begin_src emacs-lisp
-  (use-package rainbow-delimiters
-    :hook (prog-mode . rainbow-delimiters-mode))
+
+  (defun my/lsp-mode-setup ()
+    (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+    (lsp-headerline-breadcrumb-mode))
+
+  (use-package lsp-mode
+    :commands (lsp lsp-deferred)
+    :hook (lsp-mode . my/lsp-mode-setup)
+    :init
+    (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
+    :config
+    (lsp-enable-which-key-integration t))
+
 #+end_src
 
 #+RESULTS:
-| rainbow-delimiters-mode |
+| lsp-ui-mode | my/lsp-mode-setup |
 
-*** Flycheck
+*** LSP UI
 #+begin_src emacs-lisp
-  (use-package flycheck
-    :ensure t
-    :init (global-flycheck-mode))
+
+  (use-package lsp-ui
+    :hook (lsp-mode . lsp-ui-mode)
+    :custom
+    (lsp-ui-doc-position 'bottom))
+
+#+end_src
+
+#+RESULTS:
+| lsp-ui-mode | my/lsp-mode-setup |
+
+*** LSP Treemacs
+#+begin_src emacs-lisp
+  (use-package lsp-treemacs
+    :after lsp)
 #+end_src
 
 #+RESULTS:
 
-*** Company
+** Company
+
 Use company everywhere.
 #+begin_src emacs-lisp
-  (use-package company)
-  (add-hook 'after-init-hook 'global-company-mode)
+  (use-package company
+    :after lsp-mode
+    :hook (lsp-mode . company-mode)
+    :bind (:map company-active-map
+           ("<tab>" . company-complete-selection))
+          (:map lsp-mode-map
+           ("<tab>" . company-indent-or-complete-common))
+    :custom
+    (company-minimum-prefix-length 1)
+    (company-idle-delay 0.0))
+
+  (use-package company-box
+    :hook (company-mode . company-box-mode))
 #+end_src
 
 #+RESULTS:
-| global-company-mode | org-persist-load-all | x-wm-set-size-hint | tramp-register-archive-autoload-file-name-handler | magit-maybe-define-global-key-bindings | magit-auto-revert-mode--init-kludge | magit-startup-asserts | magit-version | table--make-cell-map |
+| company-box-mode | company-mode-set-explicitly |
 
-*** TODO Terminal setup / vterm
-
-*** TODO LSP Setup
 ** Python
+
 *** elpy
+
 #+begin_src emacs-lisp
   (use-package elpy
     :ensure t
@@ -631,6 +872,7 @@ Use company everywhere.
 : t
 
 *** flycheck integration
+
 #+begin_src emacs-lisp
   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
   (add-hook 'elpy-mode-hook 'flycheck-mode)
@@ -647,8 +889,8 @@ auto format on save
     :hook ((python-mode) . py-autopep8-mode))
 #+end_src
 
-
 *** TODO ein
+
 #+begin_src emacs-lisp
   (use-package ein)
 #+end_src
@@ -659,6 +901,53 @@ auto format on save
 
 ** TODO Use spc start keybindings only for no interaction (repeat) command.
 
-** TODO Dired
+* TODO Dired
 
-** TODO GTD
+* Term & Shell
+
+** eshell
+#+begin_src emacs-lisp
+  (defun my/configure-eshell
+    ;; Save command history when commands are entered
+    (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
+
+    ;; Truncate buffer for performance
+    (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
+    (setq eshell-history-size         10000
+          eshell-buffer-maximum-lines 10000
+          eshell-hist-ignoredups t
+          eshell-scroll-to-bottom-on-input t))
+
+  (use-package eshell
+    :hook (eshell-first-time-mode . my/configure-eshell)
+    :config
+    (with-eval-after-load 'esh-opt
+      (setq eshell-destroy-buffer-when-process-dies t)
+      (setq eshell-visual-commands '("htop" "zsh" "vim")))
+    )
+
+#+end_src
+**  eshell prompt extras
+
+#+begin_src emacs-lisp
+
+  (use-package eshell-prompt-extras
+    :after eshell, elpy
+    :config
+    (with-eval-after-load "esh-opt"
+      (autoload 'epe-theme-lambda "eshell-prompt-extras")
+      (setq eshell-highlight-prompt nil
+            eshell-prompt-function 'epe-theme-lambda)
+
+      ;; display venv
+      ;; (require 'virtualenvwrapper)
+      ;; (venv-initialize-eshell)
+      (autoload 'epe-theme-lambda "eshell-prompt-extras")
+      (setq eshell-highlight-prompt nil
+            eshell-prompt-function 'epe-theme-lambda)
+      ))
+
+#+end_src
+
+#+RESULTS:
+
