@@ -20,3 +20,6 @@ antigen theme robbyrussell
 
 # Tell Antigen that you're done.
 antigen apply
+
+# virtual env
+source ~/.local/bin/virtualenvwrapper.sh

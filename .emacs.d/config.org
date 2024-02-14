@@ -159,6 +159,7 @@
       "h"  '(:keymap help-map :which-key "projectile")
 
       "s" '(eshell :which-key "eshell")
+      "d" '(dired :which-key "dired")
       )
     )
 
@@ -920,16 +921,20 @@ auto format on save
 
 ** eshell
 #+begin_src emacs-lisp
-  ;; (defun my/configure-eshell
-  ;;   ;; Save command history when commands are entered
-  ;;   (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
+  (defun my/configure-eshell ()
+    ;; Save command history when commands are entered
+    (add-hook 'eshell-pre-command-hook 'eshell-save-some-history)
 
-  ;;   ;; Truncate buffer for performance
-  ;;   (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
-  ;;   (setq eshell-history-size         10000
-  ;;         eshell-buffer-maximum-lines 10000
-  ;;         eshell-hist-ignoredups t
-  ;;         eshell-scroll-to-bottom-on-input t))
+    ;; Truncate buffer for performance
+    (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
+    (setq eshell-history-size         10000
+          eshell-buffer-maximum-lines 10000
+          eshell-hist-ignoredups t
+          eshell-scroll-to-bottom-on-input t
+          setq pcomplete-cycle-completions nil))
+
+  (use-package eshell-git-prompt
+    :after eshell)
 
   (use-package eshell
     ;; :hook (eshell-first-time-mode . my/configure-eshell)
@@ -937,23 +942,25 @@ auto format on save
     (with-eval-after-load 'esh-opt
       (setq eshell-destroy-buffer-when-process-dies t)
       (setq eshell-visual-commands '("htop" "zsh" "vim")))
+
+    (eshell-git-prompt-use-theme 'git-radar)
     )
-
-#+end_src
-**  eshell prompt extras
-
-#+begin_src emacs-lisp
-
-  (use-package eshell-prompt-extras
-    :after (eshell, virtualenvwrapper)
-    :config
-    (with-eval-after-load "esh-opt"
-      (autoload 'epe-theme-lambda "eshell-prompt-extras")
-      (setq eshell-highlight-prompt nil
-            eshell-prompt-function 'epe-theme-lambda)
-      ))
 
 #+end_src
 
 #+RESULTS:
-*** TODO eshell pyvenv setup: try to understand the virtualenvwrapper.
+: t
+
+* Runtime Performance
+
+Dial the GC threshold back down so that garbage collection happens more frequently but in less time.
+
+#+begin_src emacs-lisp
+
+  ;; Make gc pauses faster by decreasing the threshold.
+  (setq gc-cons-threshold (* 2 1000 1000))
+
+#+end_src
+
+#+RESULTS:
+: 2000000
