@@ -173,6 +173,9 @@
 #+begin_src emacs-lisp
 
   (use-package evil
+    ;; :init
+    ;; (setq evil-want-integration t)
+    ;; (setq evil-want-keybinding nil)
     :config
     (evil-mode 1)
     (evil-set-initial-state 'messages-buffer-mode 'normal)
@@ -180,7 +183,22 @@
 
     ;; stop mapping <tab>
     (define-key evil-motion-state-map (kbd "TAB") nil)
+    (evil-define-key 'insert org-mode-map (kbd "S-<left>") 'org-shiftleft
+      (kbd "S-<right>") 'org-shiftright)
     )
+
+#+end_src
+
+#+RESULTS:
+: t
+
+*** evil-collection
+#+begin_src emacs-lisp
+
+  ;; (use-package evil-collection
+  ;;   :after evil
+  ;;   :config
+  ;;   (evil-collection-init))
 
 #+end_src
 
@@ -358,6 +376,42 @@
   
 #+end_src
 
+** Window Move
+
+#+begin_src emacs-lisp
+  (use-package ace-window
+    :config
+    (global-set-key (kbd "M-o") 'ace-window))
+
+  (use-package buffer-move
+    :config
+    (global-set-key (kbd "C-S-k")     'buf-move-up)
+    (global-set-key (kbd "C-S-j")   'buf-move-down)
+    (global-set-key (kbd "C-S-h")   'buf-move-left)
+    (global-set-key (kbd "C-S-l")  'buf-move-right))
+#+end_src
+
+#+RESULTS:
+: t
+
+** Avy Jump
+
+#+begin_src emacs-lisp
+
+  (use-package avy)
+
+  (my/leader-keys
+    "a"  '(:ignore t :which-key "Avy Jump")
+    "ac" '(avy-goto-char :which-key "Go to Char")
+    "av" '(avy-goto-char-2 :which-key "Go to Char 2") ;; go to 2 chars
+    "al" '(avy-goto-line :which-key "Go to line")
+    "aa" '(avy-goto-word-1 :which-key "Go to word") ;; Input one char at word start, jump to a word start with a tree.
+    )
+
+#+end_src
+
+#+RESULTS:
+
 * Org Mode
 
 ** Modes
@@ -438,18 +492,31 @@
 #+RESULTS:
 | org-bullets-mode | #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | org-mode-setup | (lambda nil (display-line-numbers-mode 0)) | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-fold-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes |
 
-** NEXT Capture: Setup my capture system
+** Capture: Setup my capture system
+
+#+begin_src emacs-lisp
+  (setq org-capture-templates
+            (quote (("t" "todo" entry (file org-default-notes-file)
+                     "* TODO %?\n%U\n%a\n")
+                    ("n" "note" entry (file org-default-notes-file)
+                     "* %? :NOTE:\n%U\n%a\n")
+                    )))
+
+
+#+end_src
+
+#+RESULTS:
+| t | todo | entry | (file org-default-notes-file) | * TODO %? |
 
 ** The TODO system setup
 #+begin_src emacs-lisp
   (defun my/org-todo-setup ()
      (setq org-todo-keywords
-           '((sequence "TODO(t)" "NEXT(n)" "ONGOING(o)" "|" "DONE(d)")
+           '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
              (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")))
      (setq org-todo-keyword-faces
            (quote (("TODO" :foreground "red" :weight bold)
                    ("NEXT" :foreground "yellow" :weight bold)
-                   ("ONGOING" :foreground "orange" :weight bold)
                    ("DONE" :foreground "forest green" :weight bold)
                    ("WAITING" :foreground "orange" :weight bold)
                    ("HOLD" :foreground "magenta" :weight bold)
@@ -479,10 +546,7 @@
              ((agenda "" ((org-agenda-span 1)))
               (tags-todo "+WORK" ((org-agenda-overriding-header "")
                                   (org-super-agenda-groups
-                                   '((:name "ONGOING Tasks"
-                                            :todo "ONGOING"
-                                            :order 1)
-                                     (:name "Work Tasks"
+                                   '((:name "Work Tasks"
                                             :and (:todo "NEXT" :tag "STAR")
                                             :order 2)
                                      (:name "MISC Tasks"
@@ -548,7 +612,7 @@ CLOCK: [2024-02-10 Sat 14:25]
 #+end_src
 
 #+RESULTS:
-| #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | org-mode-setup | org-bullets-mode | org-mode-visual-fill | (lambda nil (display-line-numbers-mode 0)) | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-fold-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes |
+| #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | org-tempo-setup | org-mode-setup | org-bullets-mode | org-mode-visual-fill | (lambda nil (display-line-numbers-mode 0)) | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-fold-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes |
 
 ** Org Babel
 #+begin_src emacs-lisp
@@ -911,11 +975,32 @@ auto format on save
 
 #+RESULTS:
 
-** TODO json mode:[[https://github.com/json-emacs/json-mode][json-mode]] 
+** Json
+#+begin_src emacs-lisp
+
+  (use-package json-mode)
+
+#+end_src
+
+#+RESULTS:
+
+** Markdown
+
+#+begin_src emacs-lisp
+  (use-package markdown-mode)
+#+end_src
+
+#+RESULTS:
 
 ** TODO Use spc start keybindings only for no interaction (repeat) command.
 
-* TODO Dired
+* Dired
+#+begin_src emacs-lisp
+  (define-key dired-mode-map "c" 'find-file)
+#+end_src
+
+#+RESULTS:
+: find-file
 
 * Term & Shell
 
@@ -946,6 +1031,19 @@ auto format on save
     (eshell-git-prompt-use-theme 'git-radar)
     )
 
+#+end_src
+
+#+RESULTS:
+: t
+
+* Plugins
+
+** PDF Support
+
+#+begin_src emacs-lisp
+  (use-package pdf-tools
+    :config
+    (pdf-tools-install))
 #+end_src
 
 #+RESULTS:
