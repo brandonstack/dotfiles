@@ -592,10 +592,11 @@
               (stuck ""
                      ((org-agenda-overriding-header "Stuck Projects")
                       (org-use-tag-inheritance nil)))
-              (tags "+PROJECT-DONE"
+              (tags  "+PROJECT-DONE"
                          ((org-agenda-overriding-header "Projects")
                           (org-use-tag-inheritance nil)))
               (alltodo "" ((org-agenda-overriding-header "")
+                           (org-agenda-sorting-strategy '(priority-down effort-down))
                          (org-super-agenda-groups
                           '((:name "Tasks to Refile"
                                    :tag "REFILE"
@@ -797,6 +798,9 @@
     "oq" '(counsel-org-tag :which-key "Set Tag")
     "ol" '(org-insert-link :which-key "Insert Link")
     "o/" '(org-sparse-tree :which-key "Sparse Tree")
+    "oe" '(org-set-effort :which-key "Set Effort")
+    "oi" '(org-clock-in :which-key "Clock In")
+    "oo" '(org-clock-out :which-key "Clock Out")
 
     "n"  '(:ignore t :which-key "Org Roam")
     "nn"  '(org-roam-node-find :which-key "Find Node")
