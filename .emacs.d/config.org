@@ -495,21 +495,24 @@
 ** Capture: Setup my capture system
 
 #+begin_src emacs-lisp
-  (setq org-capture-templates
-            (quote (("t" "todo" entry (file org-default-notes-file)
-                     "* TODO %?\n%U\n%a\n")
-                    ("n" "note" entry (file org-default-notes-file)
-                     "* %? :NOTE:\n%U\n%a\n")
-                    )))
-
+  (defun xing/org-capture-setup ()
+    (setq org-capture-templates
+          (quote (("t" "todo" entry (file org-default-notes-file)
+                   "* TODO %?\n%U\n%a\n")
+                  ("n" "note" entry (file org-default-notes-file)
+                   "* %? :NOTE:\n%U\n%a\n")
+                  ("m" "Meeting" entry (file org-default-notes-file)
+                   "* MEETING with %? :MEETING:\n%U")
+                  ))))
 
 #+end_src
 
 #+RESULTS:
-| t | todo | entry | (file org-default-notes-file) | * TODO %? |
+: xing/org-capture-setup
 
 ** The TODO system setup
 #+begin_src emacs-lisp
+
   (defun my/org-todo-setup ()
      (setq org-todo-keywords
            '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
@@ -521,75 +524,112 @@
                    ("WAITING" :foreground "orange" :weight bold)
                    ("HOLD" :foreground "magenta" :weight bold)
                    ("CANCELLED" :foreground "forest green" :weight bold))))
-     (setq org-use-fast-todo-selection t)
-     )
+     (setq org-use-fast-todo-selection t))
+
+  ; PROJECT tag for project
+  (setq org-stuck-projects
+      '("+PROJECT/-DONE" ("NEXT") nil ""))
+
 #+end_src
 
 #+RESULTS:
-: my/org-todo-setup
+| +PROJECT/-DONE | (NEXT) | nil |   |
 
 ** Refile
 
-** Agenda
-*** Super Agenda
 #+begin_src emacs-lisp
+
+  (defun xing/verify-refile-target ()
+    "Exclude todo keywords with a done state from refile targets"
+    (not (member (nth 2 (org-heading-components)) org-done-keywords)))
+
+  (defun xing/org-refile-setup ()
+    (setq org-refile-targets (quote ((nil :maxlevel . 2)
+                                     (org-agenda-files :maxlevel . 2))))
+    ; (setq org-refile-use-outline-path t)
+    ; (setq org-outline-path-complete-in-steps nil)
+    (setq org-refile-allow-creating-parent-nodes (quote confirm))
+
+    (setq org-refile-target-verify-function 'xing/verify-refile-target); 
+    )
+
+#+end_src
+
+#+RESULTS:
+: xing/org-refile-setup
+
+** Agenda
+
+*** Super Agenda
+
+#+begin_src emacs-lisp
+
   (use-package org-super-agenda
     :after org-agenda
     :config
     (org-super-agenda-mode))
+  
 #+end_src
+
 *** Custom Agenda
+
 #+begin_src emacs-lisp
-  (defun my/org-custom-agenda ()
+
+  (defun xing/org-custom-agenda ()
+    ;; Do not dim blocked tasks
+    ;; (setq org-agenda-dim-blocked-tasks nil)
+
+    ;; Compact the block agenda view
+    ;; (setq org-agenda-compact-blocks t)
+
     (setq org-agenda-custom-commands
-          '(("w" "Work Agenda"
+          '(
+            ("n" "Notes" tags "NOTE"
+             ((org-agenda-overriding-header "Notes")
+              (org-tags-match-list-sublevels t)))
+            (" " "Agenda"
              ((agenda "" ((org-agenda-span 1)))
-              (tags-todo "+WORK" ((org-agenda-overriding-header "")
-                                  (org-super-agenda-groups
-                                   '((:name "Work Tasks"
-                                            :and (:todo "NEXT" :tag "STAR")
-                                            :order 2)
-                                     (:name "MISC Tasks"
-                                            :and (:todo "NEXT" :tag "MISC")
-                                            :order 3)
-                                     (:name "Email Or Teams"
-                                            :and (:todo "NEXT" :tag "TEAMS")
-                                            :order 4)
-                                     (:name "Write Something"
-                                            :and (:todo "NEXT" :tag "DOC")
-                                            :order 5)
-                                     (:name "To-Do Tasks"
-                                            :todo "TODO"
-                                            :order 7)
-                                     (:name "Waiting For"
-                                            :todo "WAITING"
-                                            :order 6))
-                                   ))))
-             nil
-             nil)
-            ("p" "Personal Agenda"
-             ((tags-todo "-WORK" ((org-agenda-overriding-header "")
-                                  (org-super-agenda-groups
-                                   '((:name "Next to do"
-                                            :todo "NEXT"
-                                            :order 1))
-                                   )))))
-            ("i" "Inbox"
-             ((tags-todo      "+INBOX+TODO=\"TODO\""))
+              (stuck ""
+                     ((org-agenda-overriding-header "Stuck Projects")
+                      (org-use-tag-inheritance nil)))
+              (tags "+PROJECT-DONE"
+                         ((org-agenda-overriding-header "Projects")
+                          (org-use-tag-inheritance nil)))
+              (alltodo "" ((org-agenda-overriding-header "")
+                         (org-super-agenda-groups
+                          '((:name "Tasks to Refile"
+                                   :tag "REFILE"
+                                   :order 2)
+                            (:name "Next Tasks"
+                                   :todo "NEXT"
+                                   :order 3)
+                            (:name "Waiting and Postponed Tasks"
+                                   :todo "WAITING"
+                                   :todo "HOLD"
+                                   :order 7))))))
              nil
              nil)
             )))
+
 #+end_src
 
 #+RESULTS:
-: my/org-custom-agenda
+: xing/org-custom-agenda
 
 ** The Org Setup
 
-:LOGBOOK:
-CLOCK: [2024-02-10 Sat 14:25]
-:END:
 #+begin_src emacs-lisp
+
+  (defun xing/save-org-buffers ()
+    "Save `org-agenda-files' buffers without user confirmation.
+    See also `org-save-all-org-buffers'"
+    (interactive)
+    (message "Saving org-agenda-files buffers...")
+    (save-some-buffers t (lambda () 
+                           (when (member (buffer-file-name) org-agenda-files) 
+                             t)))
+    (message "Saving org-agenda-files buffers... done"))
+
   (use-package org
     :hook (org-mode . org-mode-setup)
     :config
@@ -607,7 +647,13 @@ CLOCK: [2024-02-10 Sat 14:25]
 
     (my/org-font-setup)
     (my/org-todo-setup)
-    (my/org-custom-agenda)
+    (xing/org-custom-agenda)
+    (xing/org-capture-setup)
+    (xing/org-refile-setup)
+
+    (advice-add 'org-refile :after
+                (lambda (&rest _)
+                  (xing/save-org-buffers)))
     )
 #+end_src
 
@@ -631,6 +677,7 @@ CLOCK: [2024-02-10 Sat 14:25]
 : ((conf-unix . conf-unix) (plantuml . plantuml) (C . c) (C++ . c++) (asymptote . asy) (bash . sh) (beamer . latex) (calc . fundamental) (cpp . c++) (ditaa . artist) (desktop . conf-desktop) (dot . fundamental) (elisp . emacs-lisp) (ocaml . tuareg) (screen . shell-script) (shell . sh) (sqlite . sql) (toml . conf-toml))
 
 ** Structure Templates
+
 #+begin_src emacs-lisp
 
   (with-eval-after-load 'org
@@ -649,6 +696,7 @@ CLOCK: [2024-02-10 Sat 14:25]
 ** Org Roam
 
 *** Roam
+
 #+begin_src emacs-lisp
   (use-package org-roam
     :ensure t
@@ -667,6 +715,7 @@ CLOCK: [2024-02-10 Sat 14:25]
 #+end_src
 
 *** org-roam-ui
+
 #+begin_src emacs-lisp
   (use-package org-roam-ui
     :after org-roam
@@ -745,7 +794,7 @@ CLOCK: [2024-02-10 Sat 14:25]
     "oy" '(org-cliplink :which-key "Org Cliplink")
     "op" '(org-pomodoro :which-key "Org Pomodoro")
     "ot" '(org-todo :which-key "Org TODO")
-    "oq" '(org-set-tags-command :which-key "Set Tag")
+    "oq" '(counsel-org-tag :which-key "Set Tag")
     "ol" '(org-insert-link :which-key "Insert Link")
     "o/" '(org-sparse-tree :which-key "Sparse Tree")
 
