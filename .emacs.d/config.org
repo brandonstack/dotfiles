@@ -445,9 +445,9 @@
 #+begin_src emacs-lisp
   (defun my/org-font-setup ()
     ;; Replace list hyphen with dot
-    (font-lock-add-keywords 'org-mode
-                            '(("^ *\\([-]\\) "
-                               (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+    ;; (font-lock-add-keywords 'org-mode
+    ;;                         '(("^ *\\([-]\\) "
+    ;;                            (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
     ;; Set body font in org-mode.
     ;; (set-face-attribute 'org-default nil :font "Carlito" :height 120)
@@ -603,7 +603,10 @@
                                    :tag "REFILE"
                                    :order 2)
                             (:name "Next Tasks"
-                                   :todo "NEXT"
+                                   :and (:todo "NEXT" :not (:tag "PEOPLE"))
+                                   :order 3)
+                            (:name "Tasks with People"
+                                   :tag "PEOPLE"
                                    :order 3)
                             (:name "Waiting and Postponed Tasks"
                                    :todo "WAITING"
@@ -660,7 +663,7 @@
 #+end_src
 
 #+RESULTS:
-| #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | org-tempo-setup | org-mode-setup | org-bullets-mode | org-mode-visual-fill | (lambda nil (display-line-numbers-mode 0)) | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-fold-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes |
+| #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | org-tempo-setup | org-mode-setup | org-bullets-mode | org-mode-visual-fill | (lambda nil (display-line-numbers-mode 0)) | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes |
 
 ** Org Babel
 #+begin_src emacs-lisp
