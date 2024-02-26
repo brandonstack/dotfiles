@@ -3,7 +3,7 @@
 #+begin_src emacs-lisp
   (setq xing/default-font-size 130)
   ;; (setq my/default-variable-font-size 130)
-  (setq xing/wsl-font-size 170)
+  (setq xing/wsl-font-size 200)
   (setq my/org-folder "~/Workspace/xing.org")
   (setq my/org-tasks-folder "~/Workspace/xing.org/tasks")
   (setq my/config-file "~/.emacs.d/config.org")
@@ -626,7 +626,7 @@
                            ((org-agenda-overriding-header "Projects")
                             (org-use-tag-inheritance nil)))
                 (alltodo "" ((org-agenda-overriding-header "")
-                             (org-agenda-sorting-strategy '(priority-down effort-down))
+                             (org-agenda-sorting-strategy '(priority-down effort-up))
                            (org-super-agenda-groups
                             '((:name "Tasks to Refile"
                                      :tag "REFILE"
