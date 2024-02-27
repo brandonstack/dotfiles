@@ -599,51 +599,60 @@
 
 #+begin_src emacs-lisp
 
-    (defun xing/org-agenda-custom-key ()
-      (define-key org-agenda-mode-map "j" 'org-agenda-next-item)
-      (define-key org-agenda-mode-map "k" 'org-agenda-previous-item)
-      (define-key org-agenda-mode-map "c" 'org-agenda-capture)
-      )
+  (defun xing/org-agenda-custom-key ()
+    (define-key org-agenda-mode-map "j" 'org-agenda-next-item)
+    (define-key org-agenda-mode-map "k" 'org-agenda-previous-item)
+    (define-key org-agenda-mode-map "c" 'org-agenda-capture)
+    (define-key org-agenda-mode-map ":" 'counsel-org-tag-agenda)
+    )
 
-    (defun xing/org-custom-agenda ()
-      ;; Do not dim blocked tasks
-      ;; (setq org-agenda-dim-blocked-tasks nil)
+  (defun xing/org-custom-agenda ()
+    ;; Do not dim blocked tasks
+    ;; (setq org-agenda-dim-blocked-tasks nil)
 
-      ;; Compact the block agenda view
-      ;; (setq org-agenda-compact-blocks t)
+    ;; Compact the block agenda view
+    ;; (setq org-agenda-compact-blocks t)
 
-      (setq org-agenda-custom-commands
-            '(
-              ("n" "Notes" tags "NOTE"
-               ((org-agenda-overriding-header "Notes")
-                (org-tags-match-list-sublevels t)))
-              (" " "Agenda"
-               ((agenda "" ((org-agenda-span 1)))
-                (stuck ""
-                       ((org-agenda-overriding-header "Stuck Projects")
-                        (org-use-tag-inheritance nil)))
-                (tags  "+PROJECT-DONE"
-                           ((org-agenda-overriding-header "Projects")
-                            (org-use-tag-inheritance nil)))
-                (alltodo "" ((org-agenda-overriding-header "")
-                             (org-agenda-sorting-strategy '(priority-down effort-up))
-                           (org-super-agenda-groups
-                            '((:name "Tasks to Refile"
-                                     :tag "REFILE"
-                                     :order 2)
-                              (:name "Next Tasks"
-                                     :and (:todo "NEXT" :not (:tag "PEOPLE"))
-                                     :order 3)
-                              (:name "Tasks with People"
-                                     :tag "PEOPLE"
-                                     :order 3)
-                              (:name "Waiting and Postponed Tasks"
-                                     :todo "WAITING"
-                                     :todo "HOLD"
-                                     :order 7))))))
-               nil
-               nil)
-              )))
+    (setq org-agenda-custom-commands
+          '(
+            (" " "Agenda"
+             ((agenda "" ((org-agenda-span 1)))
+              (tags "NOTE" ((org-agenda-overriding-header "Notes")
+                            (org-tags-match-list-sublevels t)))
+              (stuck ""
+                     ((org-agenda-overriding-header "Stuck Projects")
+                      (org-use-tag-inheritance nil)))
+              ;; (tags  "+PROJECT-DONE"
+              ;; ((org-agenda-overriding-header "Projects")
+              ;; (org-use-tag-inheritance nil)))
+              (alltodo "" ((org-agenda-overriding-header "")
+                           (org-agenda-sorting-strategy '(priority-down effort-up))
+                         (org-super-agenda-groups
+                          '((:name "Tasks to Refile"
+                                   :tag "REFILE"
+                                   :order 2)
+                            (:name "Focus Tasks"
+                                   :and (:todo "NEXT" :tag "FOCUS")
+                                   :order 3)
+                            (:name "Misc Tasks"
+                                   :and (:todo "NEXT" :tag "MISC")
+                                   :order 4)
+                            (:name "Read / Write Tasks"
+                                   :and (:todo "NEXT" :tag "DOC")
+                                   :order 4)
+                            (:name "Next Tasks"
+                                   :and (:todo "NEXT" :not (:tag "PEOPLE"))
+                                   :order 5)
+                            (:name "Tasks with People"
+                                   :tag "PEOPLE"
+                                   :order 6)
+                            (:name "Waiting and Postponed Tasks"
+                                   :todo "WAITING"
+                                   :todo "HOLD"
+                                   :order 7))))))
+             nil
+             nil)
+            )))
 
 #+end_src
 
