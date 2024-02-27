@@ -600,8 +600,8 @@
 #+begin_src emacs-lisp
 
   (defun xing/org-agenda-custom-key ()
-    (define-key org-agenda-mode-map "j" 'org-agenda-next-item)
-    (define-key org-agenda-mode-map "k" 'org-agenda-previous-item)
+    ;; (define-key org-agenda-mode-map "j" 'org-agenda-next-item)
+    ;; (define-key org-agenda-mode-map "k" 'org-agenda-previous-item)
     (define-key org-agenda-mode-map "c" 'org-agenda-capture)
     (define-key org-agenda-mode-map ":" 'counsel-org-tag-agenda)
     )
@@ -1142,6 +1142,22 @@ auto format on save
   (use-package pdf-tools
     :config
     (pdf-tools-install))
+#+end_src
+
+#+RESULTS:
+: t
+
+** chatgpt-shell
+
+#+begin_src emacs-lisp
+
+  (use-package chatgpt-shell
+    :config
+    (setq chatgpt-shell-api-url-base "https://xinggpt.openai.azure.com")
+    (setq chatgpt-shell-api-url-path "/openai/deployments/chat-gpt4/chat/completions?api-version=2023-09-15-preview")
+    (setq chatgpt-shell-auth-header (lambda () (format "api-key: f3889505e7ce41a183d81bffce4931da")))
+    )
+
 #+end_src
 
 #+RESULTS:
