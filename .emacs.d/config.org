@@ -1153,6 +1153,7 @@ auto format on save
 
   (use-package chatgpt-shell
     :config
+    (setq chatgpt-shell-openai-key "f3889505e7ce41a183d81bffce4931da")
     (setq chatgpt-shell-api-url-base "https://xinggpt.openai.azure.com")
     (setq chatgpt-shell-api-url-path "/openai/deployments/chat-gpt4/chat/completions?api-version=2023-09-15-preview")
     (setq chatgpt-shell-auth-header (lambda () (format "api-key: f3889505e7ce41a183d81bffce4931da")))
