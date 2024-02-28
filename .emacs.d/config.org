@@ -158,7 +158,7 @@
 
       "h"  '(:keymap help-map :which-key "projectile")
 
-      "s" '(eshell :which-key "eshell")
+      "c" '(chatgpt-shell :which-key "chatgpt-shell")
       "d" '(dired :which-key "dired")
       )
     )
