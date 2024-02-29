@@ -303,7 +303,7 @@
   (use-package nerd-icons)
   (use-package doom-themes
     :config
-    (load-theme 'doom-one t)
+    (load-theme 'doom-acario-light t)
     )
 
 #+end_src
@@ -543,7 +543,7 @@
              (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")))
      (setq org-todo-keyword-faces
            (quote (("TODO" :foreground "red" :weight bold)
-                   ("NEXT" :foreground "yellow" :weight bold)
+                   ("NEXT" :foreground "tomato" :weight bold)
                    ("DONE" :foreground "forest green" :weight bold)
                    ("WAITING" :foreground "orange" :weight bold)
                    ("HOLD" :foreground "magenta" :weight bold)
