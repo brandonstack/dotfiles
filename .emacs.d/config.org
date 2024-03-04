@@ -622,9 +622,9 @@
               (stuck ""
                      ((org-agenda-overriding-header "Stuck Projects")
                       (org-use-tag-inheritance nil)))
-              ;; (tags  "+PROJECT-DONE"
-              ;; ((org-agenda-overriding-header "Projects")
-              ;; (org-use-tag-inheritance nil)))
+              (tags  "+PROJECT-DONE"
+                     ((org-agenda-overriding-header "Projects")
+                      (org-use-tag-inheritance nil)))
               (alltodo "" ((org-agenda-overriding-header "")
                            (org-agenda-sorting-strategy '(priority-down effort-up))
                          (org-super-agenda-groups
@@ -714,7 +714,10 @@
     (org-babel-do-load-languages
         'org-babel-load-languages
         '((emacs-lisp . t)
-        (python . t)))
+          (python . t)
+          (plantuml . t)
+          (mermaid . t)
+          ))
 
     (push '("conf-unix" . conf-unix) org-src-lang-modes))
 
@@ -733,6 +736,7 @@
 
     (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
     (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+    (add-to-list 'org-structure-template-alist '("mr" . "src mermaid :file images/"))
     (add-to-list 'org-structure-template-alist '("py" . "src python")))
 
 #+end_src
@@ -819,8 +823,15 @@
     (setq org-plantuml-jar-path my/plantuml-jar)
     (add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
     (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
-    (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
   )
+#+end_src
+
+*** Mermaid
+
+#+begin_src emacs-lisp
+
+  (use-package ob-mermaid)
+
 #+end_src
 
 *** Todoist
