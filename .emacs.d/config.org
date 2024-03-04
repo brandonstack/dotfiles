@@ -663,44 +663,45 @@
 
 #+begin_src emacs-lisp
 
-    (defun xing/save-org-buffers ()
-      "Save `org-agenda-files' buffers without user confirmation.
-      See also `org-save-all-org-buffers'"
-      (interactive)
-      (message "Saving org-agenda-files buffers...")
-      (save-some-buffers t (lambda () 
-                             (when (member (buffer-file-name) org-agenda-files) 
-                               t)))
-      (message "Saving org-agenda-files buffers... done"))
+  (defun xing/save-org-buffers ()
+    "Save `org-agenda-files' buffers without user confirmation.
+    See also `org-save-all-org-buffers'"
+    (interactive)
+    (message "Saving org-agenda-files buffers...")
+    (save-some-buffers t (lambda () 
+                           (when (member (buffer-file-name) org-agenda-files) 
+                             t)))
+    (message "Saving org-agenda-files buffers... done"))
 
-    (use-package org
-      :hook
-      (org-mode . org-mode-setup)
-      (org-agenda-mode . xing/org-agenda-custom-key)
-      :config
-      (setq org-ellipsis " ▾")
-      (setq org-directory my/org-folder)
-      (setq org-agenda-files (list my/org-tasks-folder "~/.emacs.d/config.org"))
-      (setq org-default-notes-file (concat my/org-tasks-folder "/refile.org"))
-      (setq org-agenda-start-with-log-mode t)
-      (setq org-log-done 'time)
-      (setq org-log-into-drawer t)
-      (setq org-cycle-separator-lines -1) ;; use a single line of blank as seperator
-      (setq org-startup-with-inline-images t) ;; toggle inline images
-      (setq org-pretty-entities t) ;; like \{pi} to the symbol pi
-      (setq org-hide-emphasis-markers t) ;; hide markers like *bold*, /italic/
+  (use-package org
+    :hook
+    (org-mode . org-mode-setup)
+    (org-agenda-mode . xing/org-agenda-custom-key)
+    :config
+    (setq org-ellipsis " ▾")
+    (setq org-directory my/org-folder)
+    (setq org-agenda-files (list my/org-tasks-folder "~/.emacs.d/config.org"))
+    (setq org-default-notes-file (concat my/org-tasks-folder "/refile.org"))
+    (setq org-agenda-start-with-log-mode t)
+    (setq org-clock-idle-time nil)
+    (setq org-log-done 'time)
+    (setq org-log-into-drawer t)
+    (setq org-cycle-separator-lines -1) ;; use a single line of blank as seperator
+    (setq org-startup-with-inline-images t) ;; toggle inline images
+    (setq org-pretty-entities t) ;; like \{pi} to the symbol pi
+    (setq org-hide-emphasis-markers t) ;; hide markers like *bold*, /italic/
 
 
-      (my/org-font-setup)
-      (my/org-todo-setup)
-      (xing/org-custom-agenda)
-      (xing/org-capture-setup)
-      (xing/org-refile-setup)
+    (my/org-font-setup)
+    (my/org-todo-setup)
+    (xing/org-custom-agenda)
+    (xing/org-capture-setup)
+    (xing/org-refile-setup)
 
-      (advice-add 'org-refile :after
-                  (lambda (&rest _)
-                    (xing/save-org-buffers)))
-      )
+    (advice-add 'org-refile :after
+                (lambda (&rest _)
+                  (xing/save-org-buffers)))
+    )
 #+end_src
 
 #+RESULTS:
