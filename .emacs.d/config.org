@@ -1065,10 +1065,32 @@ auto format on save
     :hook ((python-mode) . py-autopep8-mode))
 #+end_src
 
-*** TODO ein
+*** jupyter
+
+Inspired by [[https://martibosch.github.io/jupyter-emacs-universe/][Jupyter in the Emacs universe | Martí Bosch]] 
 
 #+begin_src emacs-lisp
-  (use-package ein)
+
+  ;;(use-package jupyter)
+  ;; (use-package code-cells
+  ;;   :config
+  ;;   (add-hook 'python-mode-hook 'code-cells-mode-maybe)
+
+  ;;   (let ((map code-cells-mode-map))
+  ;;     (define-key map (kbd "M-p") 'code-cells-backward-cell)
+  ;;     (define-key map (kbd "M-n") 'code-cells-forward-cell)
+  ;;     (define-key map (kbd "C-c C-c") 'code-cells-eval)
+  ;;     ;; Overriding other minor mode bindings requires some insistence...
+  ;;     (define-key map [remap jupyter-eval-line-or-region] 'code-cells-eval))
+
+  ;;   (let ((map code-cells-mode-map))
+  ;;     (define-key map [remap evil-search-next] (code-cells-speed-key 'code-cells-forward-cell)) ;; n
+  ;;     (define-key map [remap evil-paste-after] (code-cells-speed-key 'code-cells-backward-cell)) ;; p
+  ;;     (define-key map [remap evil-backward-word-begin] (code-cells-speed-key 'code-cells-eval-above)) ;; b
+  ;;     (define-key map [remap evil-forward-word-end] (code-cells-speed-key 'code-cells-eval)) ;; e
+  ;;     (define-key map [remap evil-jump-forward] (code-cells-speed-key 'outline-cycle))) ;; TAB
+  ;;   )
+
 #+end_src
 
 #+RESULTS:
@@ -1090,7 +1112,7 @@ auto format on save
 
 #+RESULTS:
 
-** TODO Use spc start keybindings only for no interaction (repeat) command.
+** Use spc start keybindings only for no interaction (repeat) command.
 
 * Dired
 #+begin_src emacs-lisp
