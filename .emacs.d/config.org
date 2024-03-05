@@ -156,7 +156,8 @@
       "wk" '(evil-window-up :which-key "Window Up")
       "wj" '(evil-window-down :which-key "Window Down")
 
-      "h"  '(:keymap help-map :which-key "projectile")
+      "h"  '(:ignore t :which-key "Help")
+      "hd" '(helm-dash :which-key "helm-dash")
 
       "c" '(chatgpt-shell :which-key "chatgpt-shell")
       "d" '(dired :which-key "dired")
@@ -710,6 +711,7 @@
 ** Org Babel
 #+begin_src emacs-lisp
 
+  (use-package ob-mermaid)
   (with-eval-after-load 'org
     (org-babel-do-load-languages
         'org-babel-load-languages
@@ -826,14 +828,6 @@
   )
 #+end_src
 
-*** Mermaid
-
-#+begin_src emacs-lisp
-
-  (use-package ob-mermaid)
-
-#+end_src
-
 *** Todoist
 #+begin_src emacs-lisp
   (use-package todoist
@@ -921,6 +915,14 @@
 
 #+RESULTS:
 : evilnc-comment-or-uncomment-lines
+
+*** Documentation
+
+#+begin_src emacs-lisp
+
+  (use-package helm-dash)
+
+#+end_src
 
 ** Magit
 
