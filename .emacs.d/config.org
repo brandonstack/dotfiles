@@ -689,7 +689,7 @@
     (setq org-log-into-drawer t)
     (setq org-cycle-separator-lines -1) ;; use a single line of blank as seperator
     (setq org-startup-with-inline-images t) ;; toggle inline images
-    (setq org-pretty-entities t) ;; like \{pi} to the symbol pi
+    ;; (setq org-pretty-entities t) ;; like \{pi} to the symbol pi
     (setq org-hide-emphasis-markers t) ;; hide markers like *bold*, /italic/
 
 
