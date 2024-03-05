@@ -510,8 +510,8 @@
   (use-package org-bullets
     :after org
     :hook (org-mode . org-bullets-mode)
-    :custom
-    (org-bullets-bullet-list '("✸" "✤" "❇")))
+    :custom ;; ❇ ⬢ ⦿
+    (org-bullets-bullet-list '("✸" "◈" "✤" "★" "❖" "⬟")))
 #+end_src
 
 #+RESULTS:
@@ -920,7 +920,12 @@
 
 #+begin_src emacs-lisp
 
-  (use-package helm-dash)
+  (use-package helm-dash
+    :config
+    (setq helm-dash-common-docsets
+          '("Pandas" "Python 3" "Matplotlib" "NumPy" "Emacs Lisp"))
+    ;; (setq helm-dash-browser-func 'eww)
+    )
 
 #+end_src
 
