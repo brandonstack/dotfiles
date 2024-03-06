@@ -285,13 +285,14 @@
       )
     )
 
-   (set-face-attribute 'default nil :font "Fira Code Retina" :height (xing/font-size))
+  ;; Fira Code Retina
+  (set-face-attribute 'default nil :font "JetBrains Mono" :height (xing/font-size))
 
-   ;; Set the fixed pitch face
-   (set-face-attribute 'fixed-pitch nil :font "Fira Code Retina" :height (xing/font-size))
+  ;; Set the fixed pitch face
+  (set-face-attribute 'fixed-pitch nil :font "JetBrains Mono" :height (xing/font-size))
 
-   ;; Set the variable pitch face
-   (set-face-attribute 'variable-pitch nil :font "Cantarell" :height (xing/font-size) :weight 'regular)
+  ;; Set the variable pitch face
+  (set-face-attribute 'variable-pitch nil :font "Cantarell" :height (xing/font-size) :weight 'regular)
 
 #+end_src
 
@@ -304,7 +305,7 @@
   (use-package nerd-icons)
   (use-package doom-themes
     :config
-    (load-theme 'doom-acario-light t)
+    (load-theme 'doom-bluloco-dark t)
     )
 
 #+end_src
@@ -510,8 +511,8 @@
   (use-package org-bullets
     :after org
     :hook (org-mode . org-bullets-mode)
-    :custom ;; ❇ ⬢ ⦿
-    (org-bullets-bullet-list '("✸" "◈" "✤" "★" "❖" "⬟")))
+    :custom ;; ❇ ⬢ ⦿ ◈ ✤ ⬟ ❖
+    (org-bullets-bullet-list '("✸" "★" "◈")))
 #+end_src
 
 #+RESULTS:

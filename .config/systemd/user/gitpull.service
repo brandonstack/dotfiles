@@ -1,0 +1,10 @@
+[Unit]
+Description=Pulling recent git repo
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/git -C %h/Workspace/dotfiles pull
+ExecStart=/usr/bin/git -C %h/Workspace/xing.org pull
+
+[Install]
+WantedBy=default.target
