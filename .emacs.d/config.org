@@ -129,7 +129,7 @@
       "tt" '(counsel-load-theme :which-key "choose theme")
 
       "q"  '(:ignore t :which-key "Quit")
-      "qq" '(kill-emacs :which-key "Kill Emacs")
+      "qq" '(delete-window :which-key "Delete Window")
       "qr" '(restart-emacs :which-key "Restart Emacs")
 
       "f"  '(:ignore t :which-key "Files")
@@ -405,16 +405,11 @@
 ** Window Move
 
 #+begin_src emacs-lisp
+
   (use-package ace-window
     :config
     (global-set-key (kbd "M-o") 'ace-window))
 
-  (use-package buffer-move
-    :config
-    (global-set-key (kbd "C-S-k")     'buf-move-up)
-    (global-set-key (kbd "C-S-j")   'buf-move-down)
-    (global-set-key (kbd "C-S-h")   'buf-move-left)
-    (global-set-key (kbd "C-S-l")  'buf-move-right))
 #+end_src
 
 #+RESULTS:
@@ -713,11 +708,15 @@
 #+begin_src emacs-lisp
 
   (use-package ob-mermaid)
+
+  (use-package jupyter)
+
   (with-eval-after-load 'org
     (org-babel-do-load-languages
         'org-babel-load-languages
         '((emacs-lisp . t)
           (python . t)
+          (jupyter . t)
           (plantuml . t)
           (mermaid . t)
           ))
@@ -853,6 +852,7 @@
     "oe" '(org-set-effort :which-key "Set Effort")
     "oi" '(org-clock-in :which-key "Clock In")
     "oo" '(org-clock-out :which-key "Clock Out")
+    "od" '(org-download-clipboard :which-key "Org Download Clipboard")
 
     "n"  '(:ignore t :which-key "Org Roam")
     "nn"  '(org-roam-node-find :which-key "Find Node")
@@ -1032,18 +1032,6 @@ Use company everywhere.
 
 ** Python
 
-*** virtualenvwrapper
-
-#+begin_src emacs-lisp
-  (use-package virtualenvwrapper
-    :config
-    (venv-initialize-eshell) ;; if you want eshell support
-    )
-#+end_src
-
-#+RESULTS:
-: t
-
 *** elpy
 
 #+begin_src emacs-lisp
@@ -1091,7 +1079,6 @@ Inspired by [[https://martibosch.github.io/jupyter-emacs-universe/][Jupyter in t
 
 #+begin_src emacs-lisp
 
-  ;;(use-package jupyter)
   ;; (use-package code-cells
   ;;   :config
   ;;   (add-hook 'python-mode-hook 'code-cells-mode-maybe)
