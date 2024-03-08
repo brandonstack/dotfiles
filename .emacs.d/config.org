@@ -713,15 +713,42 @@
 
   (with-eval-after-load 'org
     (org-babel-do-load-languages
-        'org-babel-load-languages
-        '((emacs-lisp . t)
-          (python . t)
-          (jupyter . t)
-          (plantuml . t)
-          (mermaid . t)
-          ))
+     'org-babel-load-languages
+     '((emacs-lisp . t)
+       (python . t)
+       (jupyter . t)
+       (plantuml . t)
+       (mermaid . t)
+       ))
 
     (push '("conf-unix" . conf-unix) org-src-lang-modes))
+
+  (setq my/org-view-html-tmp-dir "/tmp/org-html-preview/")
+
+  (use-package f)
+
+  (defun my/org-view-html ()
+    (interactive)
+    (let ((elem (org-element-at-point))
+          (temp-file-path (concat my/org-view-html-tmp-dir (number-to-string (random (expt 2 32))) ".html")))
+      (cond
+       ((not (eq 'export-block (car elem)))
+        (message "Not in an export block!"))
+       ((not (string-equal (plist-get (car (cdr elem)) :type) "HTML"))
+        (message "Export block is not HTML!"))
+       (t (progn
+            (f-mkdir my/org-view-html-tmp-dir)
+            (f-write (plist-get (car (cdr elem)) :value) 'utf-8 temp-file-path)
+            (message temp-file-path)
+            (unless 
+              (message "starting eww...")
+              (eww "https://www.bing.com/"))
+            (switch-to-buffer-other-window "*eww*")
+            (eww-open-file temp-file-path)
+            ;;(start-process "org-html-preview" nil "xdg-open" temp-file-path)
+            ;; switch-to-buffer-other-window
+            ;; create a new buffer
+            )))))
 
 #+end_src
 
@@ -739,7 +766,9 @@
     (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
     (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
     (add-to-list 'org-structure-template-alist '("mr" . "src mermaid :file images/"))
-    (add-to-list 'org-structure-template-alist '("py" . "src python")))
+    (add-to-list 'org-structure-template-alist '("py" . "src python"))
+    (add-to-list 'org-structure-template-alist '("jp" . "src jupyter-python"))
+    )
 
 #+end_src
 
@@ -853,6 +882,7 @@
     "oi" '(org-clock-in :which-key "Clock In")
     "oo" '(org-clock-out :which-key "Clock Out")
     "od" '(org-download-clipboard :which-key "Org Download Clipboard")
+    "ov" '(my/org-view-html :which-key "View Html")
 
     "n"  '(:ignore t :which-key "Org Roam")
     "nn"  '(org-roam-node-find :which-key "Find Node")
@@ -925,7 +955,7 @@
     :config
     (setq helm-dash-common-docsets
           '("Pandas" "Python 3" "Matplotlib" "NumPy" "Emacs Lisp"))
-    ;; (setq helm-dash-browser-func 'eww)
+    (setq helm-dash-browser-func 'eww)
     )
 
 #+end_src
