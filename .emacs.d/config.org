@@ -709,14 +709,14 @@
 
   (use-package ob-mermaid)
 
-  (use-package jupyter)
+  ;; (use-package jupyter)
 
   (with-eval-after-load 'org
     (org-babel-do-load-languages
      'org-babel-load-languages
      '((emacs-lisp . t)
        (python . t)
-       (jupyter . t)
+       ;; (jupyter . t)
        (plantuml . t)
        (mermaid . t)
        ))
@@ -767,7 +767,7 @@
     (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
     (add-to-list 'org-structure-template-alist '("mr" . "src mermaid :file images/"))
     (add-to-list 'org-structure-template-alist '("py" . "src python"))
-    (add-to-list 'org-structure-template-alist '("jp" . "src jupyter-python"))
+    ;; (add-to-list 'org-structure-template-alist '("jp" . "src jupyter-python"))
     )
 
 #+end_src
