@@ -522,6 +522,8 @@
                    "* TODO %?\n%U\n%a\n")
                   ("n" "note" entry (file org-default-notes-file)
                    "* %? :NOTE:\n%U\n%a\n")
+                  ("w" "work" entry (file+headline "~/Workspace/xing.org/tasks/work-misc.org" "Inbox")
+                   "* NEXT %? :REFILE:\n%U\n%a\n")
                   ("m" "Meeting" entry (file org-default-notes-file)
                    "* MEETING with %? :MEETING:\n%U")
                   ))))
