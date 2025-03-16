@@ -404,7 +404,9 @@
 (use-package evil-nerd-commenter
   :bind ("M-/" . evilnc-comment-or-uncomment-lines))
 ;; magit
-(use-package magit)
+(use-package magit
+  :bind (("C-x g" . magit-status)))
+
 ;; projectile
 (use-package projectile
   :diminish projectile-mode
