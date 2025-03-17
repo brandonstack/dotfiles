@@ -113,11 +113,23 @@
 ;; setup visiable bell
 (setq visible-bell t)
 ;; fonts
+;; (set-face-attribute 'default nil :font "LXGW WenKai Mono" :height 140)
+;; (set-fontset-font "fontset-default" nil "LXGW WenKai Mono")
+;; 字体设置增强
+;; 主字体设置
 (set-face-attribute 'default nil :font "LXGW WenKai Mono" :height 140)
-(set-fontset-font "fontset-default" nil "LXGW WenKai Mono")
+
+;; Unicode符号覆盖
+(dolist (ft (fontset-list))
+  (set-fontset-font ft 'unicode "LXGW WenKai Mono" nil 'prepend)
+  (set-fontset-font ft 'unicode "Segoe UI Symbol" nil 'append)
+  (set-fontset-font ft 'unicode "Symbola" nil 'append)
+  (set-fontset-font ft 'unicode "Noto Color Emoji" nil 'append))
+
 ;;; end of basic config
 
 ;;; theme
+(use-package all-the-icons)
 (use-package nerd-icons)
 (use-package doom-modeline
   :ensure t
@@ -204,6 +216,7 @@
 
 ;;; custom keybinding
 (global-set-key (kbd "C-c c") 'clipboard-kill-ring-save)
+(global-set-key (kbd "C-c a") 'org-agenda)
 ;;; end of custom keybinding
 ;;;; end of keybinding & shortcut
 
@@ -288,7 +301,7 @@
   :hook (org-mode . org-mode-setup)
   :config
   (setq org-directory org-folder)
-  (setq org-agenda-files '(list org-tasks-folder))
+  (setq org-agenda-files (directory-files-recursively org-folder "\\.org$"))
   (setq org-default-notes-file (concat org-tasks-folder  "/refile.org"))
 
   (setq org-agenda-start-with-log-mode t)
@@ -364,7 +377,7 @@
          ("C-c n i" . org-roam-node-insert)
          ("C-c n c" . org-roam-capture)
          ;; Dailies
-         ("C-c n j" . org-roam-dailies-capture-today)
+         ("C-c n d" . org-roam-dailies-capture-today)
          )
   :config
   (org-roam-db-autosync-mode))
