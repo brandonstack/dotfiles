@@ -4,7 +4,7 @@
 (setq user-home-dir (expand-file-name (getenv "USERPROFILE")))
 (setq org-folder (concat user-home-dir "/Workspace/SecondBrain"))
 (setq org-tasks-folder (concat user-home-dir "/Workspace/SecondBrain/projects"))
-(defvar my/frame-transparency '(90 . 90))
+(defvar my/frame-transparency '(95 . 85))
 ;;; end of variables
 
 ;;; Package management
