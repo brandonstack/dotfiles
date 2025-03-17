@@ -141,10 +141,10 @@
 ;;; end of theme
 
 ;;; frame transparency
-;(set-frame-parameter (selected-frame) 'alpha my/frame-transparency)
-;(add-to-list 'default-frame-alist `(alpha . ,my/frame-transparency))
-;(set-frame-parameter (selected-frame) 'fullscreen 'maximized)
-;(add-to-list 'default-frame-alist '(fullscreen . maximized))
+(set-frame-parameter (selected-frame) 'alpha my/frame-transparency)
+(add-to-list 'default-frame-alist `(alpha . ,my/frame-transparency))
+(set-frame-parameter (selected-frame) 'fullscreen 'maximized)
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
 ;;; end of frame transparency
 
 ;;; number line
@@ -217,6 +217,7 @@
 ;;; custom keybinding
 (global-set-key (kbd "C-c c") 'clipboard-kill-ring-save)
 (global-set-key (kbd "C-c a") 'org-agenda)
+(global-set-key (kbd "C-x q") 'save-buffers-kill-emacs)
 ;;; end of custom keybinding
 ;;;; end of keybinding & shortcut
 
@@ -269,7 +270,7 @@
 (defun org-agenda-setup ()
   "Setup org-agenda with custom commands for personal and work views."
   ;; Define categories or tags for filtering
-  (setq org-tag-alist '(("@work" . ?w) ("@personal" . ?p)))
+  (setq org-tag-alist '(("work" . ?w) ("personal" . ?p)))
   
   ;; Custom agenda views
   (setq org-agenda-custom-commands
@@ -278,17 +279,17 @@
                         (org-deadline-warning-days 7)))
             (tags-todo "+PRIORITY=\"A\""
                        ((org-agenda-overriding-header "High Priority Tasks")))
-            (tags-todo "+@work-+PRIORITY=\"A\""
+            (tags-todo "+work-+PRIORITY=\"A\""
                        ((org-agenda-overriding-header "Work Tasks")))
-            (tags-todo "+@personal-+PRIORITY=\"A\""
+            (tags-todo "-work+PRIORITY=\"A\""
                        ((org-agenda-overriding-header "Personal Tasks")))))
           
-          ("w" "Work Tasks" tags-todo "@work"
+          ("w" "Work Tasks" tags-todo "work"
            ((org-agenda-overriding-header "Work Agenda")
             (org-agenda-files org-agenda-files)
             (org-agenda-todo-ignore-scheduled t)))
           
-          ("p" "Personal Tasks" tags-todo "@personal"
+          ("p" "Personal Tasks" tags-todo "-work"
            ((org-agenda-overriding-header "Personal Agenda")
             (org-agenda-files org-agenda-files)
             (org-agenda-todo-ignore-scheduled t)))
