@@ -284,10 +284,21 @@
             (tags-todo "-work+PRIORITY=\"A\""
                        ((org-agenda-overriding-header "Personal Tasks")))))
           
-          ("w" "Work Tasks" tags-todo "work"
-           ((org-agenda-overriding-header "Work Agenda")
-            (org-agenda-files org-agenda-files)
-            (org-agenda-todo-ignore-scheduled t)))
+          ("w" "Work Tasks" 
+           ((agenda "" ((org-agenda-span 'day)
+                        (org-deadline-warning-days 7)
+                        (org-agenda-start-day nil)
+                        (org-agenda-skip-function nil)
+                        (org-agenda-prefix-format '((agenda . " %i %-12:c%?-12t% s")))
+                        (org-agenda-overriding-header "Today's Schedule")))
+            (tags-todo "work"
+                       ((org-agenda-overriding-header "Work Tasks")
+                        (org-agenda-files org-agenda-files)
+                        (org-agenda-todo-ignore-scheduled t)
+                        (org-agenda-sorting-strategy '(priority-down category-keep todo-state-down))
+                        (org-agenda-prefix-format '((tags . " %i %-12:c [%e] ")))
+                        (org-agenda-group-by-todo-keyword t))))
+           ((org-agenda-compact-blocks t)))
           
           ("p" "Personal Tasks" tags-todo "-work"
            ((org-agenda-overriding-header "Personal Agenda")
@@ -447,6 +458,10 @@
 
 ;;;; end of dev
 
+
+;;;; AI
+
+;;;; end of AI
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
