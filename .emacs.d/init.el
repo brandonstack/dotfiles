@@ -56,6 +56,8 @@
 	 ("C-<tab>" . counsel-switch-buffer)
 	 ("C-x b" . counsel-ibuffer)
 	 ("C-x C-f" . counsel-find-file))
+         ;; :map org-mode-map
+         ;; ("C-c C-q" . counsel-org-tag))
 	 ;; :map minibuffer-local-map
 	 ;; ("C-r" . 'counsel-minibuffer-history))
   :config
@@ -158,11 +160,18 @@
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 ;;; end of number line
 
+;;; window
+(use-package olivetti
+  :ensure t
+  :config
+  (setq olivetti-body-width 100)  ;; Width in characters
+  (setq olivetti-minimum-body-width 80))
+;;; end of window
+
 ;;; plugins
 ;; rainbow-delimiters
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
-
 ;; page-break-lines
 (use-package page-break-lines
   :ensure t
@@ -194,8 +203,10 @@
 ;; window move
 (use-package ace-window
   :config
-  (global-set-key (kbd "M-o") 'ace-window)
-  :requires (avy))
+  :bind (("M-o" . ace-window))
+  :requires (avy)
+  :config
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 ;;; end of jump
 
 ;;; open files
@@ -270,7 +281,10 @@
 (defun org-agenda-setup ()
   "Setup org-agenda with custom commands for personal and work views."
   ;; Define categories or tags for filtering
-  (setq org-tag-alist '(("work" . ?w) ("personal" . ?p)))
+  (setq org-tag-alist '(("work" . ?w)
+                        ("project" . ?p)
+                        ("people" . ?e)
+                        ))
   
   ;; Custom agenda views
   (setq org-agenda-custom-commands
@@ -320,6 +334,8 @@
   (setq org-log-done 'time)
   (setq org-log-into-drawer t)
   (setq org-cycle-separator-lines -1)
+  (setq org-agenda-window-setup 'current-window) ; make agenda display in current window
+
   ;; Improve org mode looks
   (setq-default org-startup-indented t
                 org-pretty-entities t
@@ -360,21 +376,21 @@
     ;; 定义PARA文件夹的node capture templates
   (org-roam-capture-templates
    '(("p" "project" plain
-      "* 项目信息\n- 状态: %^{状态|活跃|计划中|已完成}\n- 开始日期: %<%Y-%m-%d>\n- 预计结束: %^{结束日期}\n\n* 目标\n%?\n\n* 任务\n\n* 笔记\n\n* 相关资源"
-      :target (file+head "projects/${slug}.org"
-                         "#+title: ${title}\n#+filetags: :project:\n")
+      "* Inbox\n\n* Tasks\n%?"
+      :target (file+head "projects/%<%Y%m%d%H%M%S>-${slug}.org"
+                         "#+title: ${title}\n#+filetags: \n")
       :unnarrowed t)
      
      ("a" "area" plain
-      "* %"
-      :target (file+head "areas/${slug}.org"
-                         "#+title: ${title}\n#+filetags: :area:\n")
+      "* %?"
+      :target (file+head "areas/%<%Y%m%d%H%M%S>-${slug}.org"
+                         "#+title: ${title}\n#+filetags: \n")
       :unnarrowed t)
      
      ("r" "resource" plain
       "* 内容摘要\n%?\n\n* 详细笔记\n\n* 参考来源"
-      :target (file+head "resources/${slug}.org"
-                         "#+title: ${title}\n#+filetags: :resource:\n")
+      :target (file+head "resources/%<%Y%m%d%H%M%S>-${slug}.org"
+                         "#+title: ${title}\n#+filetags: \n")
       :unnarrowed t)
      
     ;;  ("A" "archive" plain
@@ -460,9 +476,72 @@
 
 
 ;;;; AI
-
+(use-package copilot-chat)
 ;;;; end of AI
 
+;;;; personal config
+;; Function to pull changes from a Git repository
+(defun my/git-pull-repo (directory)
+  "Pull the latest changes for a Git repository in DIRECTORY."
+  (interactive "DRepository directory: ")
+  (when (file-exists-p (expand-path-join directory ".git"))
+    (let ((default-directory directory))
+      (message "Pulling latest changes for %s..." directory)
+      (shell-command "git pull")
+      (message "Done pulling changes for %s." directory))))
+
+;; Function to commit and push changes with a message
+(defun my/git-push-repo (directory commit-msg)
+  "Commit and push changes in the Git repository at DIRECTORY."
+  (interactive 
+   (let* ((dir (read-directory-name "Repository directory: "))
+          (msg (read-string (format "Commit message for %s: " dir))))
+     (list dir msg)))
+  (when (file-exists-p (expand-path-join directory ".git"))
+    (let ((default-directory directory))
+      (message "Pushing changes for %s..." directory)
+      (shell-command "git add .")
+      (shell-command (format "git commit -m \"%s\"" commit-msg))
+      (shell-command "git push")
+      (message "Changes pushed to remote repository for %s." directory))))
+
+;; Helper function to join path components
+(defun expand-path-join (dir &rest files)
+  "Join DIR with FILES components."
+  (if files
+      (apply 'expand-path-join 
+             (expand-file-name (car files) dir)
+             (cdr files))
+    dir))
+
+;; Define your repository paths
+(defvar my/repo-paths
+  (list
+   (cons 'emacs-config (concat user-home-dir "/Workspace/dotfiles"))
+   (cons 'org-repo org-folder))
+  "Alist of repository names and their paths.")
+
+;; Function to pull both repositories
+(defun my/pull-all-repos ()
+  "Pull latest changes for all defined repositories."
+  (interactive)
+  (dolist (repo my/repo-paths)
+    (my/git-pull-repo (cdr repo))))
+
+;; Slightly more advanced interactive push function
+(defun my/push-repo ()
+  "Choose a repository and push changes to it."
+  (interactive)
+  (let* ((repo-names (mapcar #'car my/repo-paths))
+         (choice (completing-read "Choose repository: " 
+                                 (mapcar #'symbol-name repo-names)))
+         (repo-path (cdr (assoc (intern choice) my/repo-paths)))
+         (msg (read-string (format "Commit message for %s: " choice))))
+    (my/git-push-repo repo-path msg)))
+
+;;;; end of personal config
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
