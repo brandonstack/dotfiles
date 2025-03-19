@@ -75,9 +75,8 @@
   :bind (("M-x" . counsel-M-x)
 	 ("C-<tab>" . counsel-switch-buffer)
 	 ("C-x b" . counsel-ibuffer)
-	 ("C-x C-f" . counsel-find-file))
-         ;; :map org-mode-map
-         ;; ("C-c C-q" . counsel-org-tag))
+	 ("C-x C-f" . counsel-find-file)
+         ("C-c C-q" . counsel-org-tag))
 	 ;; :map minibuffer-local-map
 	 ;; ("C-r" . 'counsel-minibuffer-history))
   :config
@@ -521,13 +520,15 @@
                  :stream t
                  :key my-gpt4o-key
                  :models '(gpt-4o)))
-(gptel-make-azure "Azure-DeepSeek-R1"             ;Name, whatever you'd like
-  :protocol "https"                     ;Optional -- https is the default
-  :host "ai-lxxdev6505ai034602906926.services.ai.azure.com"
-  :endpoint "/models/chat/completions?api-version=2024-05-01-preview" ;or equivalent
-  :stream t                             ;Enable streaming responses
-  :key my-deepseekr1-key
-  :models '(DeepSeek-R1))
+
+;; (setq gptel-model   'deepseek-reasoner
+;;       gptel-backend (gptel-make-azure "Azure-DeepSeek-R1"
+;;                       :protocol "https"
+;;                       :host "ai-lxxdev6505ai034602906926.services.ai.azure.com"
+;;                       :endpoint "/models/chat/completions?api-version=2024-05-01-preview"
+;;                       :stream t
+;;                       :key my-deepseekr1-key
+;;                       :models '(DeepSeek-R1)))
 
 
 ;;;; end of AI
