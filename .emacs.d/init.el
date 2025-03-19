@@ -22,6 +22,26 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
+;; straight
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name
+        "straight/repos/straight.el/bootstrap.el"
+        (or (bound-and-true-p straight-base-dir)
+            user-emacs-directory)))
+      (bootstrap-version 7))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+;; Configure straight.el
+;; (straight-use-package 'use-package)
+;; (setq straight-use-package-by-default t)
+
 ;; automatic package updates
 (use-package auto-package-update
   :custom
@@ -472,11 +492,44 @@
 (use-package markdown-mode)
 ;;; end of languages
 
+;;; shell
+
+;;; end of shell
+
 ;;;; end of dev
 
 
 ;;;; AI
 (use-package copilot-chat)
+;; (use-package copilot
+;;   :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
+(straight-use-package
+ '(copilot :type git :host github :repo "copilot-emacs/copilot.el" :files ("*.el")))
+(straight-use-package 'gptel)
+
+;; gpt4o
+(defvar my-gpt4o-key (getenv "gpt4o-key")
+  "OpenAI API key.")
+(defvar my-deepseekr1-key (getenv "deepseek-r1-key")
+  "Azure Deepseek R1 Key")
+(setq
+ gptel-model 'gpt-4o
+ gptel-backend (gptel-make-azure "Azure-gpt4o"
+                 :protocol "https"
+                 :host "lxxde-m6bnrv1a-eastus2.cognitiveservices.azure.com"
+                 :endpoint "/openai/deployments/xingli-OpenAI-gpt-4o/chat/completions?api-version=2024-10-21"
+                 :stream t
+                 :key my-gpt4o-key
+                 :models '(gpt-4o)))
+(gptel-make-azure "Azure-DeepSeek-R1"             ;Name, whatever you'd like
+  :protocol "https"                     ;Optional -- https is the default
+  :host "ai-lxxdev6505ai034602906926.services.ai.azure.com"
+  :endpoint "/models/chat/completions?api-version=2024-05-01-preview" ;or equivalent
+  :stream t                             ;Enable streaming responses
+  :key my-deepseekr1-key
+  :models '(DeepSeek-R1))
+
+
 ;;;; end of AI
 
 ;;;; personal config
