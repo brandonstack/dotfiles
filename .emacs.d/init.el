@@ -245,8 +245,9 @@
 ;;; end of open files
 
 ;;; custom keybinding
-(global-set-key (kbd "C-c c") 'clipboard-kill-ring-save)
-(global-set-key (kbd "C-c a") 'org-agenda)
+(global-set-key (kbd "C-c l") #'org-store-link)
+(global-set-key (kbd "C-c a") #'org-agenda)
+(global-set-key (kbd "C-c c") #'org-capture)
 (global-set-key (kbd "C-x q") 'save-buffers-kill-emacs)
 ;;; end of custom keybinding
 ;;;; end of keybinding & shortcut
