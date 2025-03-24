@@ -4,7 +4,7 @@
 (setq user-home-dir (expand-file-name (getenv "USERPROFILE")))
 (setq org-folder (concat user-home-dir "/Workspace/SecondBrain"))
 (setq org-tasks-folder (concat user-home-dir "/Workspace/SecondBrain/projects"))
-(defvar my/frame-transparency '(95 . 85))
+(defvar my/frame-transparency '(95 . 95))
 ;;; end of variables
 
 ;;; Package management
@@ -158,7 +158,7 @@
   :custom ((doom-modeline-height 15)))
 (use-package doom-themes
   :config
-  (load-theme 'doom-bluloco-dark t))
+  (load-theme 'doom-badger t))
 ;;; end of theme
 
 ;;; frame transparency
@@ -185,6 +185,12 @@
   :config
   (setq olivetti-body-width 100)  ;; Width in characters
   (setq olivetti-minimum-body-width 80))
+
+;; tree
+(use-package neotree
+  :ensure t
+  :bind ("C-x C-n" . neotree-toggle)
+  :config (setq neo-smart-open t))
 ;;; end of window
 
 ;;; plugins
@@ -273,20 +279,6 @@
                   (org-level-8 . 0.8)))
     (set-face-attribute (car face) nil :font "LXGW WenKai Mono" :weight 'regular :height (cdr face))))
 
-(defun org-todo-setup ()
-  "Setup org-mode todo keywords and faces."
-  (setq org-todo-keywords
-        '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
-          (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")))
-  (setq org-todo-keyword-faces
-        (quote (("TODO" :foreground "red" :weight bold)
-                ("NEXT" :foreground "tomato" :weight bold)
-                ("DONE" :foreground "forest green" :weight bold)
-                ("WAITING" :foreground "orange" :weight bold)
-                ("HOLD" :foreground "magenta" :weight bold)
-                ("CANCELLED" :foreground "forest green" :weight bold))))
-  (setq org-use-fast-todo-selection t))
-
 (defun org-capture-setup ()
   "Setup org-mode capture templates."
   (setq org-capture-templates
@@ -298,27 +290,44 @@
                  "* NEXT %? :REFILE:\n%U\n%a\n")
                 ))))
 
+(defun org-todo-setup ()
+  "Setup org-mode todo keywords and faces."
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "INPROGRESS(p)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+  (setq org-todo-keyword-faces
+        (quote (("TODO" :foreground "red" :weight bold)
+                ("NEXT" :foreground "tomato" :weight bold)
+                ("DONE" :foreground "forest green" :weight bold)
+                ("WAITING" :foreground "orange" :weight bold)
+                ("CANCELLED" :foreground "forest green" :weight bold))))
+  (setq org-use-fast-todo-selection t))
+
 (defun org-agenda-setup ()
   "Setup org-agenda with custom commands for personal and work views."
+  (setq org-agenda-files (directory-files-recursively org-tasks-folder "\\.org$"))
+
+  (setq org-log-done 'time)
+  (setq org-log-into-drawer t)
+  (setq org-agenda-start-with-log-mode t)
+  (setq org-agenda-span 7) ;; default show tasks of 7 days
+
+  ;; 高亮过期的任务
+  (setq org-agenda-skip-deadline-prewarning-if-scheduled t)
+  (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
+  
   ;; Define categories or tags for filtering
   (setq org-tag-alist '(("work" . ?w)
                         ("project" . ?p)
                         ("people" . ?e)
                         ))
+  ;; Priority
+  (setq org-highest-priority ?A)
+  (setq org-lowest-priority ?C)
+  (setq org-default-priority ?B)
   
   ;; Custom agenda views
   (setq org-agenda-custom-commands
-        '(("d" "Dashboard"
-           ((agenda "" ((org-agenda-span 'day)
-                        (org-deadline-warning-days 7)))
-            (tags-todo "+PRIORITY=\"A\""
-                       ((org-agenda-overriding-header "High Priority Tasks")))
-            (tags-todo "+work-+PRIORITY=\"A\""
-                       ((org-agenda-overriding-header "Work Tasks")))
-            (tags-todo "-work+PRIORITY=\"A\""
-                       ((org-agenda-overriding-header "Personal Tasks")))))
-          
-          ("w" "Work Tasks" 
+        '(("w" "Work Tasks" 
            ((agenda "" ((org-agenda-span 'day)
                         (org-deadline-warning-days 7)
                         (org-agenda-start-day nil)
@@ -347,12 +356,7 @@
   :hook (org-mode . org-mode-setup)
   :config
   (setq org-directory org-folder)
-  (setq org-agenda-files (directory-files-recursively org-folder "\\.org$"))
   (setq org-default-notes-file (concat org-tasks-folder  "/refile.org"))
-
-  (setq org-agenda-start-with-log-mode t)
-  (setq org-log-done 'time)
-  (setq org-log-into-drawer t)
   (setq org-cycle-separator-lines -1)
   (setq org-agenda-window-setup 'current-window) ; make agenda display in current window
 
@@ -370,7 +374,7 @@
 
 ;; PROJECT tag for project
 (setq org-stuck-projects
-      '("+PROJECT/-DONE" ("NEXT") nil ""))
+      '("+project/-DONE" ("NEXT") nil ""))
 
 ;; Center Org Buffers
 (defun org-mode-visual-fill ()
@@ -435,8 +439,9 @@
   :config
   (setq org-roam-ui-sync-theme t
         org-roam-ui-follow t
-        org-roam-ui-update-on-save t
-        org-roam-ui-open-on-start t))
+        org-roam-ui-update-on-save t)
+  :bind (
+         ("C-c n u" . org-roam-ui-open)))
 ;;; end of org-roam
 
 ;;; org plugins
@@ -460,6 +465,28 @@
 ;;;; end of org-mode
 
 ;;;; dev
+
+;;; config
+(setq-default indent-tabs-mode nil) ; tab to whitespace
+(setq-default tab-width 4) ; tab width: 4
+(add-hook 'prog-mode-hook 'hs-minor-mode)
+;;; end of config
+
+;;; lsp
+(use-package lsp-mode
+  :hook ((prog-mode . lsp))
+  :config (setq lsp-keymap-prefix "C-c l"))
+;;; end of lsp-mode
+
+;;; dev functions
+;; company
+(use-package company
+  :config
+  (global-company-mode t))
+;; end of company
+
+;;; end of dev functions
+
 ;;; plugins
 ;; commenting
 (use-package evil-nerd-commenter
