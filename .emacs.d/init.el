@@ -293,7 +293,7 @@
 (defun org-todo-setup ()
   "Setup org-mode todo keywords and faces."
   (setq org-todo-keywords
-        '((sequence "TODO(t)" "INPROGRESS(p)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+        '((sequence "TODO(t)" "NEXT(n)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
   (setq org-todo-keyword-faces
         (quote (("TODO" :foreground "red" :weight bold)
                 ("NEXT" :foreground "tomato" :weight bold)
@@ -304,7 +304,9 @@
 
 (defun org-agenda-setup ()
   "Setup org-agenda with custom commands for personal and work views."
-  (setq org-agenda-files (directory-files-recursively org-tasks-folder "\\.org$"))
+  (setq org-agenda-files
+        (append (directory-files-recursively org-tasks-folder "\\.org$")
+                (directory-files-recursively (concat org-folder "/daily") "\\.org$")))
 
   (setq org-log-done 'time)
   (setq org-log-into-drawer t)
@@ -474,7 +476,7 @@
 
 ;;; lsp
 (use-package lsp-mode
-  :hook ((prog-mode . lsp))
+  ; :hook ((prog-mode . lsp))
   :config (setq lsp-keymap-prefix "C-c l"))
 ;;; end of lsp-mode
 
