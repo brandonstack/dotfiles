@@ -158,7 +158,7 @@
   :custom ((doom-modeline-height 15)))
 (use-package doom-themes
   :config
-  (load-theme 'doom-badger t))
+  (load-theme 'doom-gruvbox t))
 ;;; end of theme
 
 ;;; frame transparency
@@ -474,7 +474,7 @@
 
 ;;; lsp
 (use-package lsp-mode
-  :hook ((prog-mode . lsp))
+  ;; :hook ((prog-mode . lsp))
   :config (setq lsp-keymap-prefix "C-c l"))
 ;;; end of lsp-mode
 
