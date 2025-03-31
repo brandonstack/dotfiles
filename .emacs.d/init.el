@@ -232,6 +232,12 @@
   :requires (avy)
   :config
   (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
+(use-package buffer-move
+  :ensure t
+  :bind (("<C-M-up>" . buf-move-up)
+         ("<C-M-down>" . buf-move-down)
+         ("<C-M-left>" . buf-move-left)
+         ("<C-M-right>" . buf-move-right)))
 ;;; end of jump
 
 ;;; open files
@@ -302,6 +308,20 @@
                 ("CANCELLED" :foreground "forest green" :weight bold))))
   (setq org-use-fast-todo-selection t))
 
+(defun my/org-skip-non-project-tasks ()
+  "Skip tasks that are not directly tagged as projects (ignores inherited tags)."
+  (save-restriction
+    (widen)
+    (let ((subtree-end (save-excursion (org-end-of-subtree t)))
+          (has-direct-project-tag nil))
+      ;; Check if current heading has project tag directly (not inherited)
+      (let ((tags (org-get-tags nil t))) ; nil t means get only local tags, not inherited
+        (setq has-direct-project-tag (member "project" tags)))
+      
+      (if has-direct-project-tag
+          nil  ; Don't skip this item
+        subtree-end))))  ; Skip to end of subtree
+
 (defun org-agenda-setup ()
   "Setup org-agenda with custom commands for personal and work views."
   (setq org-agenda-files
@@ -336,6 +356,14 @@
                         (org-agenda-skip-function nil)
                         (org-agenda-prefix-format '((agenda . " %i %-12:c%?-12t% s")))
                         (org-agenda-overriding-header "Today's Schedule")))
+            (tags-todo "work+project"
+                    ((org-agenda-overriding-header "Projects")
+                     (org-agenda-files org-agenda-files)
+                     (org-agenda-sorting-strategy '(priority-down category-keep))
+                     (org-agenda-prefix-format '((tags . " %i %-12:c [%e] ")))
+                     (org-agenda-group-by-todo-keyword t)
+                     (org-agenda-skip-function 'my/org-skip-non-project-tasks)
+                     ))
             (tags-todo "work"
                        ((org-agenda-overriding-header "Work Tasks")
                         (org-agenda-files org-agenda-files)
