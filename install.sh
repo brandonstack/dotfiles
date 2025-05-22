@@ -7,7 +7,6 @@
 
 # Variables
 DOTFILES=$HOME/.dotfiles
-EMACSD=$HOME/.emacs.d
 TMUX=$HOME/.tmux
 ZSH=$HOME/.local/share/zinit
 
@@ -126,6 +125,7 @@ clean_dotfiles() {
     .zshrc
     .zshrc.local
     .Brewfile
+    .custom.el
     "
     for c in ${confs}; do
         [ -f $HOME/${c} ] && mv $HOME/${c} $HOME/${c}.bak
@@ -135,13 +135,13 @@ clean_dotfiles() {
         mv $HOME/.config/starship.toml $HOME/.config/starship.toml.bak
     fi
 
-    [ -d $EMACSD ] && mv $EMACSD $EMACSD.bak
 
     rm -rf $ZSH $TMUX $DOTFILES
     rm -rf $HOME/.pip
 
     rm -f $HOME/.gitignore_global
     rm -f $HOME/.tmux.conf
+    rm -f $HOME/.custom.el
 }
 
 YES=0
@@ -157,7 +157,7 @@ promote_yn() {
 }
 
 # Clean or not?
-if [ -d $ZSH ] || [ -d $TMUX ] || [ -d $EMACSD ]; then
+if [ -d $ZSH ] || [ -d $TMUX ] ; then
     promote_yn "${YELLOW}Do you want to reset all configurations?${NORMAL}" "continue"
     if [ $continue -eq $YES ]; then
         clean_dotfiles
@@ -228,6 +228,7 @@ ln -sf $DOTFILES/.vimrc $HOME/.vimrc
 ln -sf $DOTFILES/.tmux.conf.local $HOME/.tmux.conf.local
 ln -sf $DOTFILES/.markdownlintrc $HOME/.markdownlintrc
 ln -sf $DOTFILES/starship.toml $HOME/.config/starship.toml
+ln -sf $DOTFILES/.custom.el $HOME/.custom.el
 
 cp -n $DOTFILES/.npmrc $HOME/.npmrc
 cp -n $DOTFILES/.gemrc $HOME/.gemrc
@@ -248,10 +249,6 @@ fi
 if is_cygwin; then
     ln -sf $DOTFILES/.minttyrc $HOME/.minttyrc
 fi
-
-# Emacs Configurations
-printf "${GREEN}▓▒░ Installing Centaur Emacs...${NORMAL}\n"
-sync_repo seagle0128/.emacs.d $EMACSD
 
 # Oh My Tmux
 printf "${GREEN}▓▒░ Installing Oh My Tmux...${NORMAL}\n"
