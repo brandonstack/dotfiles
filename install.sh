@@ -219,7 +219,7 @@ sh -c "$(curl -fsSL https://git.io/zinit-install)"
 
 # Dotfiles
 printf "${GREEN}▓▒░ Installing Dotfiles...${NORMAL}\n"
-sync_repo seagle0128/dotfiles $DOTFILES
+sync_repo brandonstack/dotfiles $DOTFILES
 
 ln -sf $DOTFILES/.zshenv $HOME/.zshenv
 ln -sf $DOTFILES/.zshrc $HOME/.zshrc
